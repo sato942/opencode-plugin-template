@@ -1,0 +1,1864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PROJECT}} map</title>
+<meta name="description" content="Every part {{PROJECT}} needs, and how far its repository covers each one.">
+<!--
+  PROJECT MAP DATA. This block is the map: edit it, and the page redraws every count, bar and diagram.
+  One part per line. "Keeping it current" at the bottom of the page explains each field.
+  AGENTS.md working rule 11 says when to update it; tools/check_project.py validates it.
+-->
+<script type="application/json" id="project-map-data">
+{
+"project": "{{PROJECT}}",
+"repo": "{{REPO}}",
+"updated": "{{NOW}}",
+"notice": {"text": "This map starts with what every OpenCode plugin has, read from OpenCode’s source. The first session extends it with what this plugin’s own goal needs, and this line goes when that is done.", "label": "How the study works", "path": "studies/ANATOMY.md"},
+"origin": {"label": "anatomy of an OpenCode plugin", "path": "studies/2026-11-03/anatomy.md"},
+"overview": {"host": "The plugin", "user": "The user", "outside": "Outside services", "around": "Around the whole plugin"},
+"stages": [
+  {"id": "idea", "name": "Idea", "what": "The owner gives one, or the map shows a gap.", "files": [{"label": "features/", "path": "features/README.md"}]},
+  {"id": "research", "name": "Research", "what": "Options compared on the main values.", "files": [{"label": "studies/", "path": "studies/README.md"}]},
+  {"id": "spec", "name": "Spec", "what": "A detailed draft, with open choices marked Proposed.", "files": [{"label": "specs/", "path": "specs/README.md"}]},
+  {"id": "decide", "name": "Decide", "what": "The owner chooses; their review turns a Draft into Agreed.", "files": [{"label": "specs/", "path": "specs/README.md"}, {"label": "features/", "path": "features/README.md"}]},
+  {"id": "build", "name": "Build", "what": "Only on the owner’s instruction, with fake services first.", "files": [{"label": "code"}]},
+  {"id": "demonstrate", "name": "Demonstrate", "what": "The spec’s validations run for real and leave evidence.", "files": [{"label": "specs/", "path": "specs/README.md"}, {"label": "matrix", "path": "FEATURE_MATRIX.md"}]},
+  {"id": "measure", "name": "Measure", "what": "Results compared against the baseline, where a main value is at stake.", "files": [{"label": "specs/", "path": "specs/README.md"}]},
+  {"id": "deliver", "name": "Deliver", "what": "Commit, and push when the owner agrees.", "files": [{"label": "git"}]}
+],
+"stage_rails": [
+  {"label": "PROJECT_MAP.html", "text": "Alongside every stage: shows the whole project, feeds Idea with its gaps, and decides nothing."},
+  {"label": "STATE.md", "path": "STATE.md", "text": "Alongside every stage: says where things stand, and is updated in each one."}
+],
+"stage_now": {"stages": ["idea"], "not_started": ["research", "spec", "decide", "build", "demonstrate", "measure", "deliver"], "text": "The project is at Idea. Nothing is built and no validation has run, and Build needs the owner’s instruction."},
+"loops": [
+  {"id": "A", "from": "research", "to": "idea", "seen": false, "when": "A study turns up a need nobody had written down, or changes what the idea should be.", "example": "A study names parts nobody had recorded, and they become this map’s Gaps.", "refs": []},
+  {"id": "B", "from": "spec", "to": "research", "seen": false, "when": "Writing the detail exposes a question no study has answered.", "example": "An open question in a spec file waits for the study it names.", "refs": []},
+  {"id": "C", "from": "decide", "to": "research", "seen": false, "when": "The owner wants more evidence before choosing.", "example": "The owner reads a study and asks for deeper research on one option.", "refs": []},
+  {"id": "D", "from": "decide", "to": "spec", "seen": false, "when": "The owner’s choice changes the draft, so the spec file is rewritten to match.", "example": "A review changes a proposed decision; the decisions table and the requirements follow.", "refs": []},
+  {"id": "E", "from": "build", "to": "spec", "seen": false, "when": "Building shows a requirement cannot be built as written, or can be read two ways.", "example": "The spec file changes first, then the code.", "refs": []},
+  {"id": "F", "from": "demonstrate", "to": "build", "seen": false, "when": "A validation fails, so the build is fixed.", "example": "The limit: after two unsuccessful attempts at the same problem, stop repeating repairs and explain the blocker.", "refs": []},
+  {"id": "G", "from": "demonstrate", "to": "spec", "seen": false, "when": "A validation shows the requirement itself is wrong, or cannot be checked.", "example": "The requirement changes, and the validation runs again against the new one.", "refs": []},
+  {"id": "H", "from": "measure", "to": "build", "seen": false, "when": "The work is correct, but worse than the baseline on a main value.", "example": "A paired measurement shows the loss, and the build changes to win it back.", "refs": []},
+  {"id": "I", "from": "measure", "to": "decide", "seen": false, "when": "A measurement contradicts what a decision assumed. It goes back to the owner, and the decision stands until they change it.", "example": "A decision rested on a vendor’s number, and this project’s own measurement disagrees.", "refs": []},
+  {"id": "J", "from": "deliver", "to": "idea", "seen": false, "when": "Real use brings failures and new ideas, and the cycle starts again.", "example": "A failure in real use becomes a fix, or a new feature note.", "refs": []}
+],
+"loop_rules": [
+  "Any stage can send work back. The stages are an order, not gates.",
+  "Going back needs a reason: new evidence, or the owner’s word.",
+  "The earlier stage’s file changes first, then the change is carried forward.",
+  "Only the owner changes a decision, and it stands until they do.",
+  "A repair loop stops after two failed attempts at the same problem."
+],
+"areas": [
+  {"id": "A1", "name": "Terminal UI", "description": "What a person sees in `opencode`, from a TUI part.", "place": [2, 1, 3], "parts": [
+    {"id": "A1.1", "name": "Commands and keybindings", "meaning": "Commands in the palette, as slash commands and on keys", "status": "Gap", "refs": ["tui"], "seen": ["S3", "S5"]},
+    {"id": "A1.2", "name": "Routes and slots", "meaning": "Whole screens, and pieces placed in the home, session and sidebar layouts", "status": "Gap", "refs": ["tui"], "seen": ["S3", "S5"]},
+    {"id": "A1.3", "name": "Dialogs, toasts and panels", "meaning": "Passing feedback, questions and session panels", "status": "Gap", "refs": ["tui"], "seen": ["S3", "S5"]},
+    {"id": "A1.4", "name": "Markdown renderers and theme use", "meaning": "Custom code block rendering, and following the user's theme", "status": "Gap", "refs": ["tui"], "seen": ["S3", "S5"]},
+    {"id": "A1.5", "name": "Terminal attention", "meaning": "Notifying the user, which is off until they enable it", "status": "Gap", "refs": ["tui", "drift"], "seen": ["S5"]}
+  ]},
+  {"id": "A2", "name": "OpenCode Desktop", "description": "What a person sees in Desktop, from a GUI part.", "place": [2, 3, 5], "parts": [
+    {"id": "A2.1", "name": "Panels and tabs", "meaning": "Side panels, and tabs in the session view", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]},
+    {"id": "A2.2", "name": "Commands and menu items", "meaning": "The palette, composer slash list, row menus and the title bar", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]},
+    {"id": "A2.3", "name": "Settings pages", "meaning": "A page of the plugin's own under Settings", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]},
+    {"id": "A2.4", "name": "Composer pills and notes", "meaning": "Controls and context in the prompt composer", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]},
+    {"id": "A2.5", "name": "Toasts and attention", "meaning": "Passing feedback and notifications in windows", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]},
+    {"id": "A2.6", "name": "Main process entry", "meaning": "Native work in Electron's main process, with full Node.js access", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]},
+    {"id": "A2.7", "name": "Window to main calls", "meaning": "Typed calls between a window and the main entry (Ipc and Live)", "status": "Gap", "refs": ["gui", "drift"], "seen": ["S3", "S6"]},
+    {"id": "A2.8", "name": "Translations", "meaning": "Text in the user's language, which cannot be loaded lazily here", "status": "Gap", "refs": ["gui"], "seen": ["S3", "S6"]}
+  ]},
+  {"id": "A3", "name": "Plugin shape", "description": "Which parts the plugin has, and how they fit together. Everything passes through this.", "place": [4, 1, 5], "parts": [
+    {"id": "A3.1", "name": "Which parts it has", "meaning": "Server, TUI, GUI and RPC, chosen per feature", "status": "Gap", "refs": ["overview"], "seen": ["S1"], "priority": 1},
+    {"id": "A3.2", "name": "Which surface each feature serves", "meaning": "Where a person sees each result, so none reaches nobody", "status": "Recorded", "refs": ["agents", "overview", "matrix"], "seen": ["S1", "S5", "S6"]},
+    {"id": "A3.3", "name": "Identity", "meaning": "The plugin's id, its package name, and how selectors use the id", "status": "Gap", "refs": ["overview", "loading"], "seen": ["S1", "S4"]},
+    {"id": "A3.4", "name": "User options", "meaning": "Settings from the config entry. They reach a GUI part only as JSON, and never reach a TUI part from `opencode.json`", "status": "Gap", "refs": ["server", "drift"], "seen": ["S2", "S5"], "priority": 6},
+    {"id": "A3.5", "name": "Promise or Effect", "meaning": "Which server API the code is written against", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]}
+  ]},
+  {"id": "A4", "name": "Tools", "description": "What the model can call.", "place": [5, 1, 2], "parts": [
+    {"id": "A4.1", "name": "Tool definitions", "meaning": "Name, description, input and output schemas", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"], "priority": 2},
+    {"id": "A4.2", "name": "Reachability under Code Mode", "meaning": "A tool is reached only through `execute` unless it sets `codemode: false`", "status": "Gap", "refs": ["server", "drift"], "seen": ["S4"], "priority": 2},
+    {"id": "A4.3", "name": "Tool results", "meaning": "What `execute` returns, and how the model and the transcript see it", "status": "Gap", "refs": ["server"], "seen": ["S3", "S4"]},
+    {"id": "A4.4", "name": "Tool permissions", "meaning": "Asking before an action, and the action name used to hide a tool", "status": "Gap", "refs": ["server"], "seen": ["S3", "S4"]},
+    {"id": "A4.5", "name": "Changing other tools", "meaning": "Editing, removing or redirecting a tool, and name collisions", "status": "Gap", "refs": ["server"], "seen": ["S3", "S4"]}
+  ]},
+  {"id": "A5", "name": "Commands and session work", "description": "What a person triggers, and how results enter a session.", "place": [5, 2, 3], "parts": [
+    {"id": "A5.1", "name": "Server slash commands", "meaning": "Listed on both surfaces. `execute` returns nothing", "status": "Gap", "refs": ["server", "overview"], "seen": ["S3", "S4"], "priority": 3},
+    {"id": "A5.2", "name": "Feedback into the session", "meaning": "`session.prompt`, which starts the model, or `session.synthetic`", "status": "Gap", "refs": ["server", "overview"], "seen": ["S1", "S3"], "priority": 3},
+    {"id": "A5.3", "name": "Reading and starting sessions", "meaning": "Listing, reading, creating and steering sessions", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A5.4", "name": "Stateless generation", "meaning": "One model call with no session, which is experimental", "status": "Gap", "refs": ["server"], "seen": ["S3", "S4"]}
+  ]},
+  {"id": "A6", "name": "Hooks and transforms", "description": "Changing what OpenCode does as it runs.", "place": [5, 3, 4], "parts": [
+    {"id": "A6.1", "name": "Session hooks", "meaning": "Prompt, context, model request, retry and other points in a run", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A6.2", "name": "Tool hooks", "meaning": "Before and after a tool runs", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A6.3", "name": "Permission hooks", "meaning": "Deciding or watching permission requests", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A6.4", "name": "Shell hooks", "meaning": "Changing the shell environment", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A6.5", "name": "Events", "meaning": "Subscribing to what happens on the bus", "status": "Gap", "refs": ["server"], "seen": ["S1", "S4"]},
+    {"id": "A6.6", "name": "Transform safety", "meaning": "One throw disables the whole plugin", "status": "Gap", "refs": ["server", "loading"], "seen": ["S4"], "priority": 4}
+  ]},
+  {"id": "A7", "name": "What it contributes", "description": "Adding to OpenCode's own catalogs.", "place": [5, 4, 5], "parts": [
+    {"id": "A7.1", "name": "Agents", "meaning": "Agent definitions", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A7.2", "name": "Skills and references", "meaning": "Skills and reference sources", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A7.3", "name": "Providers and models", "meaning": "Model providers, models and their AI SDK hooks", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]},
+    {"id": "A7.4", "name": "MCP servers and integrations", "meaning": "MCP servers, and connections with OAuth or keys", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3", "S7"]},
+    {"id": "A7.5", "name": "Web search, VCS and worktrees", "meaning": "Other replaceable OpenCode services", "status": "Gap", "refs": ["server"], "seen": ["S1", "S3"]}
+  ]},
+  {"id": "A8", "name": "RPC", "description": "How the parts and outside clients call the server part.", "place": [6, 1, 3], "parts": [
+    {"id": "A8.1", "name": "The contract", "meaning": "Methods and events, always with `input`, `output` and `events`", "status": "Gap", "refs": ["server", "drift"], "seen": ["S1", "S4", "S8"], "priority": 5},
+    {"id": "A8.2", "name": "Errors", "meaning": "Declared errors, and the `rpc.` system errors callers can get", "status": "Gap", "refs": ["server"], "seen": ["S3", "S4"]},
+    {"id": "A8.3", "name": "Events to clients", "meaning": "Pushing changes to a TUI or GUI part", "status": "Gap", "refs": ["server"], "seen": ["S3", "S4"]},
+    {"id": "A8.4", "name": "Location", "meaning": "Which project a call runs against. From a GUI part with no location, it is the home folder", "status": "Gap", "refs": ["gui", "drift"], "seen": ["S6"]}
+  ]},
+  {"id": "A9", "name": "State", "description": "What the plugin keeps, and where.", "place": [6, 3, 5], "parts": [
+    {"id": "A9.1", "name": "Server storage", "meaning": "`ctx.storage`, shared across locations for a plugin id", "status": "Gap", "refs": ["server", "drift"], "seen": ["S3", "S4"]},
+    {"id": "A9.2", "name": "TUI and GUI storage", "meaning": "Each surface's own stored state, which the others cannot read", "status": "Gap", "refs": ["tui", "gui"], "seen": ["S5", "S6"]},
+    {"id": "A9.3", "name": "Surviving a restart", "meaning": "`setup` runs again on any reload, also for plugins that did not change", "status": "Gap", "refs": ["loading", "drift"], "seen": ["S4", "S8"], "priority": 4},
+    {"id": "A9.4", "name": "Files and outside data", "meaning": "What the plugin stores outside OpenCode", "status": "Gap", "refs": [], "seen": ["S1"]}
+  ]},
+  {"id": "A10", "name": "OpenCode itself", "description": "What the plugin draws on: the release it runs under, and how that loads it.", "place": [5, 5, 6], "parts": [
+    {"id": "A10.1", "name": "Finding the plugin", "meaning": "Config entries, discovered folders, and what is silently skipped", "status": "Gap", "refs": ["loading"], "seen": ["S2", "S4"]},
+    {"id": "A10.2", "name": "Activation order", "meaning": "Who runs first, and duplicate ids", "status": "Gap", "refs": ["loading"], "seen": ["S4"]},
+    {"id": "A10.3", "name": "Reload", "meaning": "What restarts when a file changes, including every plugin after it", "status": "Gap", "refs": ["loading", "drift"], "seen": ["S4", "S8"]},
+    {"id": "A10.4", "name": "Failure", "meaning": "How a failed plugin shows, and how an older revision keeps running", "status": "Gap", "refs": ["loading"], "seen": ["S4", "S8"]},
+    {"id": "A10.5", "name": "Cleanup", "meaning": "What `setup` must release, and in what order", "status": "Gap", "refs": ["server", "loading"], "seen": ["S4", "S5"]},
+    {"id": "A10.6", "name": "Managed policy", "meaning": "What an organization's policy can block", "status": "Gap", "refs": ["loading"], "seen": ["S4"]}
+  ]},
+  {"id": "A11", "name": "Compatibility", "description": "Which OpenCode this works on.", "parts": [
+    {"id": "A11.1", "name": "The release it targets", "meaning": "The OpenCode version and the `@opencode/plugin` range", "status": "Recorded", "refs": ["agents", "packaging"], "seen": ["S1"]},
+    {"id": "A11.2", "name": "Desktop's own CLI", "meaning": "Desktop's bundled OpenCode updates apart from the CLI on PATH", "status": "Gap", "refs": ["packaging"], "seen": ["S8"]},
+    {"id": "A11.3", "name": "V1 users", "meaning": "Whether to support V1 from one package, and how to port", "status": "Gap", "refs": ["overview"], "seen": ["S1"]},
+    {"id": "A11.4", "name": "Shared runtime modules", "meaning": "The host provides `effect` and the SDK; never bundle them", "status": "Gap", "refs": ["packaging"], "seen": ["S3"]},
+    {"id": "A11.5", "name": "Operating systems and builds", "meaning": "Windows paths, the Bun and Node builds, and a part's `os` limit", "status": "Gap", "refs": ["tui", "gui"], "seen": ["S5", "S6"]}
+  ]},
+  {"id": "A12", "name": "Packaging and distribution", "description": "How it reaches a user.", "parts": [
+    {"id": "A12.1", "name": "Package layout", "meaning": "`exports`, `files` and what ships", "status": "Gap", "refs": ["packaging"], "seen": ["S1", "S7"]},
+    {"id": "A12.2", "name": "GUI bundle build", "meaning": "One CommonJS file through the official Vite preset, built before publishing", "status": "Gap", "refs": ["packaging", "gui"], "seen": ["S3"]},
+    {"id": "A12.3", "name": "Publishing", "meaning": "npm, or a Git URL as OpenCode's own plugins use", "status": "Gap", "refs": ["packaging"], "seen": ["S1", "S7"], "priority": 8},
+    {"id": "A12.4", "name": "Install instructions", "meaning": "A global config entry for a GUI, and `cli.json` for a remote server or TUI options", "status": "Gap", "refs": ["packaging", "drift"], "seen": ["S2", "S5", "S6"], "priority": 8},
+    {"id": "A12.5", "name": "Updates", "meaning": "The 24-hour check, pinned versions and what users do", "status": "Gap", "refs": ["loading"], "seen": ["S4"]}
+  ]},
+  {"id": "A13", "name": "Demonstration", "description": "How anyone knows it works.", "parts": [
+    {"id": "A13.1", "name": "Isolated instance", "meaning": "A private OpenCode, so the owner's live one is never a test bench", "status": "Recorded", "refs": ["agents", "testing"], "seen": ["S8"]},
+    {"id": "A13.2", "name": "Smoke test", "meaning": "The plugin's id, parts, commands and RPC, through the real API", "status": "Recorded", "refs": ["testing"], "seen": ["S8"]},
+    {"id": "A13.3", "name": "Typecheck", "meaning": "Against the pinned SDK", "status": "Recorded", "refs": ["testing"], "seen": ["S8"]},
+    {"id": "A13.4", "name": "A real model calling its tools", "meaning": "With a real provider, or a deterministic fake", "status": "Gap", "refs": ["testing"], "seen": [], "priority": 7},
+    {"id": "A13.5", "name": "In a real Desktop window", "meaning": "The bundle running, its panels and commands visible", "status": "Gap", "refs": ["testing"], "seen": [], "priority": 7},
+    {"id": "A13.6", "name": "In a real terminal UI", "meaning": "The TUI part drawn and used", "status": "Gap", "refs": ["testing"], "seen": [], "priority": 7},
+    {"id": "A13.7", "name": "The installed package", "meaning": "A tarball or registry install, not the working folder", "status": "Gap", "refs": ["testing", "packaging"], "seen": [], "priority": 7}
+  ]},
+  {"id": "A14", "name": "Security and privacy", "description": "What the plugin can reach, and what it must not leak.", "parts": [
+    {"id": "A14.1", "name": "What a plugin can do", "meaning": "It runs with OpenCode's rights, and nothing read in the loader isolates it", "status": "Gap", "refs": ["overview"], "seen": ["S4", "S6"], "priority": 9},
+    {"id": "A14.2", "name": "Secrets", "meaning": "Credential storage, and never placing a secret in options that reach windows", "status": "Gap", "refs": ["gui", "server"], "seen": ["S3", "S6"], "priority": 9},
+    {"id": "A14.3", "name": "Data sent to models", "meaning": "What the plugin adds to prompts and tool results", "status": "Gap", "refs": ["server"], "seen": ["S1"]},
+    {"id": "A14.4", "name": "Asking before acting", "meaning": "Permission rules for anything the plugin does outside OpenCode", "status": "Gap", "refs": ["server"], "seen": ["S3"]}
+  ]},
+  {"id": "A15", "name": "Docs, support and legal", "description": "What a user reads, and what the owner must clear.", "parts": [
+    {"id": "A15.1", "name": "User README", "meaning": "What it does, on which surface, how to install and turn off", "status": "Gap", "refs": [], "seen": ["S7"], "priority": 10},
+    {"id": "A15.2", "name": "Compatibility statement", "meaning": "The releases it ran on, with what was not run", "status": "Gap", "refs": ["testing"], "seen": ["S8"], "priority": 10},
+    {"id": "A15.3", "name": "Licenses", "meaning": "This plugin's license, and the flags on what it copies", "status": "Recorded", "refs": ["legal"], "seen": ["S7"]},
+    {"id": "A15.4", "name": "The OpenCode name", "meaning": "Using it in a package name is not reviewed", "status": "Recorded", "refs": ["legal"], "seen": ["S1"]}
+  ]},
+  {"id": "A16", "name": "Plugin knowledge", "description": "Keeping what this project knows true to upstream.", "parts": [
+    {"id": "A16.1", "name": "Source over docs", "meaning": "The rule, and the order of authority", "status": "Recorded", "refs": ["agents", "plugindev"], "seen": ["S8"]},
+    {"id": "A16.2", "name": "The pinned snapshot", "meaning": "OpenCode's docs and source, copied at a commit", "status": "Recorded", "refs": ["plugindev"], "seen": ["S1", "S3"]},
+    {"id": "A16.3", "name": "Noticing upstream change", "meaning": "`tools/sync_upstream.py --check`", "status": "Recorded", "refs": ["knowledge", "plugindev"], "seen": ["S8"]},
+    {"id": "A16.4", "name": "Recorded drift", "meaning": "Where docs and source disagree, and what to do", "status": "Recorded", "refs": ["drift"], "seen": ["S1", "S8"]}
+  ]}
+],
+"edges": [["user", "A1"], ["user", "A2"], ["A1", "A3"], ["A2", "A3"], ["A3", "A4"], ["A3", "A5"], ["A3", "A6"], ["A3", "A7"], ["A5", "A8"], ["A6", "A9"], ["A10", "A3"], ["A7", "outside"]],
+"decisions": [
+  {"id": "BUILD-START", "title": "When implementation starts, and of what", "status": "Open", "when": "{{NOW}}", "specs": {}, "parts": [], "settled_by": "owner", "note": "Blocks: Build. Implementation needs an explicit owner instruction (working rule 1)."}
+],
+"refs": {
+ "study": {
+  "title": "The anatomy of an OpenCode plugin",
+  "href": "studies/2026-11-03/anatomy.md"
+ },
+ "agents": {
+  "title": "AGENTS.md, invariants",
+  "href": "AGENTS.md#architecture-invariants"
+ },
+ "knowledge": {
+  "title": "AGENTS.md, plugin knowledge",
+  "href": "AGENTS.md#plugin-knowledge"
+ },
+ "overview": {
+  "title": "Guide: overview",
+  "href": "plugin-dev/guide/overview.md"
+ },
+ "loading": {
+  "title": "Guide: loading",
+  "href": "plugin-dev/guide/loading.md"
+ },
+ "server": {
+  "title": "Guide: the server part",
+  "href": "plugin-dev/guide/server.md"
+ },
+ "tui": {
+  "title": "Guide: the TUI part",
+  "href": "plugin-dev/guide/tui.md"
+ },
+ "gui": {
+  "title": "Guide: the GUI part",
+  "href": "plugin-dev/guide/gui.md"
+ },
+ "packaging": {
+  "title": "Guide: packaging",
+  "href": "plugin-dev/guide/packaging.md"
+ },
+ "testing": {
+  "title": "Guide: demonstrating",
+  "href": "plugin-dev/guide/testing.md"
+ },
+ "drift": {
+  "title": "Guide: drift",
+  "href": "plugin-dev/guide/drift.md"
+ },
+ "plugindev": {
+  "title": "Plugin knowledge",
+  "href": "plugin-dev/README.md"
+ },
+ "legal": {
+  "title": "Legal flags",
+  "href": "LEGAL_FLAGS.md"
+ },
+ "matrix": {
+  "title": "Feature matrix",
+  "href": "FEATURE_MATRIX.md"
+ }
+},
+"sources": {
+ "S1": {
+  "title": "OpenCode V2 plugin docs",
+  "kind": "Official docs",
+  "read": "In full, against the source",
+  "segments": [
+   {
+    "text": "OpenCode V2 plugin docs",
+    "url": "plugin-dev/upstream/services/www/src/docs/content/build/plugins/index.mdx"
+   }
+  ]
+ },
+ "S2": {
+  "title": "OpenCode plugin configuration docs",
+  "kind": "Official docs",
+  "read": "In full",
+  "segments": [
+   {
+    "text": "OpenCode plugin configuration docs",
+    "url": "plugin-dev/upstream/services/www/src/docs/content/plugins.mdx"
+   }
+  ]
+ },
+ "S3": {
+  "title": "The plugin SDK, `packages/plugin/`",
+  "kind": "Source code",
+  "read": "In full for the Promise, TUI and GUI APIs",
+  "segments": [
+   {
+    "text": "The plugin SDK, packages/plugin/",
+    "url": "plugin-dev/upstream/packages/plugin/src/README.md"
+   }
+  ]
+ },
+ "S4": {
+  "title": "The server host, `packages/core/src/plugin/`",
+  "kind": "Source code",
+  "read": "In full for loading and lifecycle; by pin for the rest",
+  "segments": [
+   {
+    "text": "The server host, packages/core/src/plugin/",
+    "url": "plugin-dev/upstream/packages/core/src/plugin/supervisor.ts"
+   }
+  ]
+ },
+ "S5": {
+  "title": "The terminal host, `packages/tui/src/plugin/`",
+  "kind": "Source code",
+  "read": "In full",
+  "segments": [
+   {
+    "text": "The terminal host, packages/tui/src/plugin/",
+    "url": "plugin-dev/upstream/packages/tui/src/plugin/context.tsx"
+   }
+  ]
+ },
+ "S6": {
+  "title": "The Desktop hosts, `packages/desktop/src/main/plugin/` and `packages/app/src/runtime/plugin/`",
+  "kind": "Source code",
+  "read": "In full for loading; by pin for the rest",
+  "segments": [
+   {
+    "text": "The Desktop hosts, packages/desktop/src/main/plugin/ and packages/app/src/runtime/plugin/",
+    "url": "plugin-dev/upstream/packages/desktop/src/main/plugin/host.ts"
+   }
+  ]
+ },
+ "S7": {
+  "title": "Real plugins: Figma, Browser, Pairing",
+  "kind": "Source code",
+  "read": "In part",
+  "segments": [
+   {
+    "text": "Real plugins: Figma, Browser, Pairing",
+    "url": "plugin-dev/upstream/packages/plugins/README.md"
+   }
+  ]
+ },
+ "S8": {
+  "title": "This study's own runs on OpenCode CLI 2.2.1 and 2.2.5",
+  "kind": "Our measurement",
+  "read": "Run",
+  "segments": [
+   {
+    "text": "This study's own runs on OpenCode CLI 2.2.1 and 2.2.5",
+    "url": "studies/2026-11-03/results.md"
+   }
+  ]
+ }
+},
+"idea_from": {},
+"ideas": [],
+"changelog": [
+  {"when": "{{NOW}}", "text": "Created from the OpenCode plugin template, with the parts every OpenCode plugin has. The parts this plugin’s own goal needs come next, from the anatomy study."}
+]
+}
+</script>
+<style>
+:root {
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee; --surface-3: #ebeae4;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #6f6d67;
+  --hair: rgba(11, 11, 11, .09); --hair-2: rgba(11, 11, 11, .16); --dots: #dcdbd3; --edge: #a9a79f;
+  --accent: #2a78d6; --accent-ink: #1c62b8; --accent-soft: rgba(42, 120, 214, .09); --accent-ring: rgba(42, 120, 214, .35);
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b; --out: #8f8d86;
+  --good-soft: rgba(12, 163, 12, .10); --warn-soft: rgba(250, 178, 25, .17); --crit-soft: rgba(208, 59, 59, .09); --out-soft: rgba(137, 135, 129, .13);
+  --host: rgba(42, 120, 214, .045); --host-line: rgba(42, 120, 214, .28);
+  --tip-bg: #1f1f1d; --tip-ink: #f0efec; --tip-ink-2: #c3c2b7;
+  --shadow: 0 1px 2px rgba(11, 11, 11, .04), 0 8px 24px -12px rgba(11, 11, 11, .14);
+  --shadow-lift: 0 2px 4px rgba(11, 11, 11, .05), 0 14px 32px -14px rgba(11, 11, 11, .22);
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --toolbar-h: 64px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #222220; --surface-3: #2a2a28;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9b998f;
+    --hair: rgba(255, 255, 255, .08); --hair-2: rgba(255, 255, 255, .15); --dots: #2c2c2a; --edge: #5f5e58;
+    --accent: #3987e5; --accent-ink: #84b5f2; --accent-soft: rgba(57, 135, 229, .14); --accent-ring: rgba(57, 135, 229, .45);
+    --out: #8a887f;
+    --good-soft: rgba(12, 163, 12, .17); --warn-soft: rgba(250, 178, 25, .15); --crit-soft: rgba(208, 59, 59, .18); --out-soft: rgba(137, 135, 129, .16);
+    --host: rgba(57, 135, 229, .06); --host-line: rgba(57, 135, 229, .32);
+    --tip-bg: #f0efec; --tip-ink: #0b0b0b; --tip-ink-2: #52514e;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .6);
+    --shadow-lift: 0 2px 4px rgba(0, 0, 0, .35), 0 14px 32px -14px rgba(0, 0, 0, .75);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #222220; --surface-3: #2a2a28;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9b998f;
+  --hair: rgba(255, 255, 255, .08); --hair-2: rgba(255, 255, 255, .15); --dots: #2c2c2a; --edge: #5f5e58;
+  --accent: #3987e5; --accent-ink: #84b5f2; --accent-soft: rgba(57, 135, 229, .14); --accent-ring: rgba(57, 135, 229, .45);
+  --out: #8a887f;
+  --good-soft: rgba(12, 163, 12, .17); --warn-soft: rgba(250, 178, 25, .15); --crit-soft: rgba(208, 59, 59, .18); --out-soft: rgba(137, 135, 129, .16);
+  --host: rgba(57, 135, 229, .06); --host-line: rgba(57, 135, 229, .32);
+  --tip-bg: #f0efec; --tip-ink: #0b0b0b; --tip-ink-2: #52514e;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -12px rgba(0, 0, 0, .6);
+  --shadow-lift: 0 2px 4px rgba(0, 0, 0, .35), 0 14px 32px -14px rgba(0, 0, 0, .75);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.55 var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden; }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: 100%; max-width: 1360px; margin: 0 auto; padding: 0 32px; }
+.skip { position: absolute; left: 16px; top: -48px; background: var(--surface); padding: 8px 12px; border-radius: 8px; box-shadow: var(--shadow); z-index: 50; }
+.skip:focus { top: 12px; }
+
+/* Icons */
+.icon { flex: none; display: block; }
+.icon .i-ring { fill: none; stroke-width: 1.6; }
+.icon .i-stroke { fill: none; stroke-width: 1.7; stroke-linecap: round; }
+.icon-spec .i-fill { fill: var(--good); }
+.icon-spec .i-mark { fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.icon-rec .i-ring { stroke: var(--warn); } .icon-rec .i-fill { fill: var(--warn); }
+.icon-gap .i-ring, .icon-gap .i-stroke { stroke: var(--crit); } .icon-gap .i-dot { fill: var(--crit); }
+.icon-out .i-ring, .icon-out .i-stroke { stroke: var(--out); }
+.icon-wd .i-ring { stroke: var(--muted); stroke-dasharray: 2 2; }
+
+/* Hero */
+.hero { padding-top: 56px; padding-bottom: 32px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 18px; font-size: 12.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+.eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+h1 { margin: 0; font-size: clamp(38px, 6vw, 64px); line-height: 1.02; letter-spacing: -.035em; font-weight: 680; }
+.lede { margin: 16px 0 0; max-width: 62ch; font-size: 18.5px; line-height: 1.5; color: var(--ink-2); }
+.meta { margin: 14px 0 0; font-size: 13.5px; color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 600; }
+.notice { margin: 14px 0 0; padding: 10px 14px; max-width: 86ch; font-size: 13.5px; color: var(--ink-2); background: var(--accent-soft); border: 1px solid var(--host-line); border-radius: 12px; }
+.summary { margin-top: 32px; display: grid; gap: 14px; }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.tile { position: relative; display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 16px 18px 15px; background: var(--surface); border: 1px solid var(--hair); border-radius: 16px; box-shadow: var(--shadow); cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease, border-color .16s ease; }
+.tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+.tile[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring), var(--shadow); }
+.tile.is-off { opacity: .45; }
+.tile-top { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; }
+.tile-num { font-size: 38px; line-height: 1.05; font-weight: 650; letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin-top: 6px; }
+.tile-pct { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.tile-blurb { font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 4px; }
+.tile::after { content: ""; position: absolute; left: 18px; right: 18px; top: 0; height: 3px; border-radius: 0 0 3px 3px; }
+.tile-spec::after { background: var(--good); } .tile-rec::after { background: var(--warn); } .tile-gap::after { background: var(--crit); }
+.tile-out::after { background: repeating-linear-gradient(135deg, var(--out) 0 3px, transparent 3px 6px); }
+.total { background: var(--surface); border: 1px solid var(--hair); border-radius: 16px; padding: 16px 18px; box-shadow: var(--shadow); }
+.total-head { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--ink-2); margin-bottom: 10px; }
+.total-head b { color: var(--ink); }
+
+/* Bars (stacked, part-to-whole) */
+.bar { display: flex; gap: 2px; width: 100%; height: 8px; }
+.bar.big { height: 16px; }
+.bar.mid { height: 8px; }
+.bar.mini { height: 6px; }
+.seg { flex: 1 1 0; min-width: 3px; height: 100%; }
+.seg:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.seg:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.bar.mini .seg:first-child { border-top-left-radius: 3px; border-bottom-left-radius: 3px; }
+.bar.mini .seg:last-child { border-top-right-radius: 3px; border-bottom-right-radius: 3px; }
+.seg-spec { background: var(--good); } .seg-rec { background: var(--warn); } .seg-gap { background: var(--crit); }
+.seg-out { background: repeating-linear-gradient(135deg, var(--out) 0 2px, var(--surface-3) 2px 4px); }
+.bar.big .seg { cursor: default; }
+.bar.big .seg:hover, .bar.big .seg:focus-visible { filter: brightness(1.06) saturate(1.1); }
+
+/* Toolbar */
+.toolbar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--page) 84%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid var(--hair); }
+.toolbar-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding-top: 11px; padding-bottom: 11px; }
+.search { position: relative; display: flex; align-items: center; flex: 1 1 280px; max-width: 380px; }
+.search svg { position: absolute; left: 12px; width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 1.8; pointer-events: none; }
+.search input { width: 100%; height: 38px; padding: 0 38px 0 36px; border-radius: 10px; border: 1px solid var(--hair-2); background: var(--surface); color: var(--ink); font: inherit; font-size: 14px; outline: none; transition: border-color .15s, box-shadow .15s; }
+.search input::placeholder { color: var(--muted); }
+.search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+.search kbd { position: absolute; right: 10px; font: 11px var(--mono); color: var(--muted); border: 1px solid var(--hair-2); border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; background: var(--surface-2); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px 0 10px; border-radius: 999px; border: 1px solid var(--hair-2); background: var(--surface); font-size: 13.5px; font-weight: 550; cursor: pointer; white-space: nowrap; transition: background .15s, opacity .15s, border-color .15s; }
+.chip:hover { border-color: var(--edge); }
+.chip-n { font-variant-numeric: tabular-nums; color: var(--muted); font-weight: 500; }
+.chip:not(.chip-prio):not(.chip-review)[aria-pressed="false"] { opacity: .5; background: transparent; }
+.chip:not(.chip-prio):not(.chip-review)[aria-pressed="false"] span:not(.chip-n) { text-decoration: line-through; text-decoration-color: var(--muted); }
+.chip-spec[aria-pressed="true"] { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+.chip-rec[aria-pressed="true"] { background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 50%, transparent); }
+.chip-gap[aria-pressed="true"] { background: var(--crit-soft); border-color: color-mix(in srgb, var(--crit) 40%, transparent); }
+.chip-out[aria-pressed="true"] { background: var(--out-soft); border-color: color-mix(in srgb, var(--out) 45%, transparent); }
+.chip-prio { padding: 0 12px; }
+.chip-prio .pmark { font: 600 11px var(--mono); color: var(--accent-ink); border: 1px solid var(--accent); border-radius: 5px; padding: 0 4px; }
+.chip-prio[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); opacity: 1; }
+.count { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; padding: 0 4px; }
+.link-btn { border: 0; background: none; color: var(--accent-ink); cursor: pointer; padding: 4px 6px; font-size: 13px; font-weight: 600; border-radius: 6px; }
+.link-btn:hover { background: var(--accent-soft); }
+.spacer { flex: 1 1 0; }
+.seg-ctl { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--hair); }
+.seg-ctl .seg-lbl { font-size: 12px; color: var(--muted); padding: 0 6px 0 7px; }
+.seg-ctl button { border: 0; background: transparent; height: 28px; padding: 0 10px; border-radius: 7px; font-size: 12.5px; font-weight: 550; color: var(--ink-2); cursor: pointer; }
+.seg-ctl button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(11, 11, 11, .12); }
+.icon-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--hair-2); background: var(--surface); cursor: pointer; font-size: 12.5px; font-weight: 550; color: var(--ink-2); }
+.icon-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 44px; padding-top: 32px; padding-bottom: 40px; }
+.toc { position: sticky; top: calc(var(--toolbar-h) + 24px); align-self: start; max-height: calc(100vh - var(--toolbar-h) - 48px); overflow: auto; padding-right: 4px; }
+.toc-title { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: baseline; column-gap: 6px; row-gap: 5px; padding: 7px 9px; border-radius: 9px; color: var(--ink); text-decoration: none; transition: background .15s; }
+.toc a:hover { background: var(--surface-2); }
+.toc a.is-current { background: var(--accent-soft); }
+.toc .t-id { font: 600 11.5px var(--mono); color: var(--muted); }
+.toc .t-name { font-size: 13.5px; font-weight: 550; line-height: 1.3; }
+.toc .t-n { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.toc .bar { grid-column: 2 / 4; }
+.toc a.is-empty { opacity: .38; }
+main { min-width: 0; }
+.block { margin-bottom: 44px; }
+.block-head { margin-bottom: 16px; }
+.block-head h2, .about h2 { margin: 0; font-size: 24px; letter-spacing: -.02em; font-weight: 650; }
+.block-head p { margin: 6px 0 0; max-width: 72ch; color: var(--ink-2); font-size: 14.5px; }
+
+/* Overview diagram */
+.canvas { position: relative; background-color: var(--surface); background-image: radial-gradient(var(--dots) 1.1px, transparent 1.3px); background-size: 20px 20px; background-position: 10px 10px; border: 1px solid var(--hair); border-radius: 20px; padding: 28px 30px 30px; box-shadow: var(--shadow); }
+.arch { position: relative; display: grid; grid-template-columns: var(--arch-cols, repeat(4, minmax(0, 1fr)) minmax(0, .92fr)); grid-template-rows: var(--arch-rows); column-gap: 22px; row-gap: 38px; }
+.arch > svg.edges { position: absolute; left: 0; top: 0; z-index: 1; overflow: visible; pointer-events: none; }
+.host-bg { grid-column: 1 / 5; margin: 0 -14px -18px; border: 1px solid var(--host-line); background: var(--host); border-radius: 18px; z-index: 0; position: relative; }
+.host-label, .around-label { position: absolute; top: 10px; left: 14px; font-size: 11.5px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+.around-box { grid-column: 1 / -1; position: relative; z-index: 2; margin: 0 -14px; padding: 36px 14px 14px; border: 1px dashed var(--hair-2); border-radius: 18px; background: color-mix(in srgb, var(--surface-2) 60%, transparent); }
+.around-label { color: var(--muted); }
+.around-inner { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.node { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 7px; min-width: 0; padding: 11px 13px 11px; text-align: left; background: var(--surface); border: 1px solid var(--hair-2); border-radius: 13px; box-shadow: var(--shadow); cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, opacity .16s ease; }
+.node:hover, .node:focus-visible { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-lift); }
+.node-top { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.node-id { font: 600 11px var(--mono); color: var(--accent-ink); background: var(--accent-soft); padding: 1px 6px; border-radius: 5px; flex: none; }
+.node-name { font-size: 14px; font-weight: 620; line-height: 1.25; letter-spacing: -.005em; }
+.node-tag { font-size: 11.5px; color: var(--ink-2); margin-top: -3px; }
+.node-meta { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.node.is-empty { opacity: .35; }
+.node.is-hot { border-color: var(--accent); }
+.fixed-node { position: relative; z-index: 2; justify-self: center; align-self: center; display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; color: var(--ink-2); background: var(--surface); border: 1px solid var(--hair-2); border-radius: 999px; box-shadow: var(--shadow); }
+.fixed-node svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.outside-node { border-radius: 12px; border-style: dashed; }
+path.edge { fill: none; stroke: var(--edge); stroke-width: 1.5; transition: stroke .15s, opacity .15s, stroke-width .15s; }
+path.edge.dashed { stroke-dasharray: 5 4; }
+path.edge.hot { stroke: var(--accent); stroke-width: 2.2; }
+path.edge.dim { opacity: .22; }
+marker path { fill: var(--edge); }
+marker#arrow-hot path { fill: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend .lg-line { width: 26px; height: 0; border-top: 1.5px solid var(--edge); }
+.legend .lg-dash { border-top-style: dashed; }
+
+/* Stages and loops */
+.flow-wrap { container-type: inline-size; }
+.flow { position: relative; padding-top: var(--flow-room-h, 154px); }
+.flow-lines { position: absolute; left: 0; top: 0; z-index: 1; overflow: visible; pointer-events: none; }
+.flow-track { position: relative; z-index: 2; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 12px; }
+.stage { display: flex; flex-direction: column; min-width: 0; background: var(--surface); border: 1px solid var(--hair-2); border-radius: 13px; box-shadow: var(--shadow); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, opacity .16s ease; }
+.stage-btn { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 11px 7px 8px; text-align: left; background: none; border: 0; border-radius: 12px 12px 0 0; cursor: pointer; }
+.stage-top { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.stage-n { flex: none; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; font: 650 11px var(--mono); color: var(--accent-ink); background: var(--accent-soft); }
+.stage-name { min-width: 0; font-size: 12px; font-weight: 640; letter-spacing: -.012em; line-height: 1.2; }
+.stage-tag { display: none; margin-left: auto; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 650; color: var(--accent-ink); background: var(--accent-soft); }
+.stage-what { font-size: 11.5px; line-height: 1.38; color: var(--ink-2); }
+.stage-files { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 10px 10px; }
+.stage-files .ref { height: auto; min-height: 20px; padding: 1px 5px; font-size: 10.5px; white-space: normal; }
+.stage-file { display: inline-flex; align-items: center; min-height: 20px; padding: 1px 5px; font: 550 10.5px var(--mono); color: var(--muted); }
+.stage.is-now { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--surface)); box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow); }
+.stage.is-later { border-style: dashed; background: color-mix(in srgb, var(--surface) 82%, transparent); box-shadow: none; }
+.stage.is-later .stage-n { color: var(--muted); background: var(--surface-2); }
+.stage.is-hot { transform: translateY(-2px); border-color: var(--accent); border-style: solid; box-shadow: 0 0 0 3px var(--accent-ring), var(--shadow-lift); }
+.stage.is-dim { opacity: .36; }
+.flow-here { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); column-gap: 18px; margin-top: 9px; }
+.here-mark { display: flex; justify-content: center; padding-top: 11px; border: 1.5px solid var(--accent); border-top: 0; border-radius: 0 0 9px 9px; height: 8px; }
+.here-label { align-self: flex-start; padding: 2px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 650; line-height: 1.4; white-space: nowrap; color: #fff; background: var(--accent); }
+.flow-rails { position: relative; z-index: 2; display: grid; gap: 7px; margin-top: 34px; }
+.rail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 7px 11px; font-size: 12.5px; line-height: 1.4; color: var(--ink-2); background: color-mix(in srgb, var(--surface-2) 72%, transparent); border: 1px dashed var(--hair-2); border-radius: 10px; }
+path.flow-fwd { fill: none; stroke: var(--ink-2); stroke-width: 1.5; }
+path.loop-arc { fill: none; stroke: var(--edge); stroke-width: 1.5; stroke-dasharray: 4 4; transition: stroke .15s, opacity .15s, stroke-width .15s; }
+path.loop-arc.seen { stroke: var(--accent); stroke-dasharray: none; }
+path.loop-arc.hot { stroke: var(--accent); stroke-width: 2.4; }
+path.loop-arc.dim { opacity: .13; }
+marker#flow-fwd path { fill: var(--ink-2); }
+marker#flow-exp path { fill: var(--edge); }
+marker#flow-seen path, marker#flow-hot path { fill: var(--accent); }
+.loop-mark { pointer-events: auto; cursor: pointer; transition: opacity .15s; }
+.loop-mark circle { fill: var(--surface); stroke: var(--edge); stroke-width: 1.3; transition: fill .15s, stroke .15s; }
+.loop-mark.seen circle { stroke: var(--accent); }
+.loop-mark text { font: 650 10.5px var(--mono); fill: var(--ink-2); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.loop-mark.seen text { fill: var(--accent-ink); }
+.loop-mark.hot circle { fill: var(--accent); stroke: var(--accent); }
+.loop-mark.hot text { fill: #fff; }
+.loop-mark.dim { opacity: .2; }
+.flow-status { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-height: 26px; margin: 12px 0 0; font-size: 13px; color: var(--ink-2); }
+.legend .lg-seen { border-top: 2px solid var(--accent); }
+.legend .lg-fwd { border-top-color: var(--ink-2); }
+.legend .lg-box { width: 18px; height: 12px; border-radius: 4px; border: 1px solid var(--accent); background: var(--accent-soft); }
+.legend .lg-later { border: 1px dashed var(--edge); background: transparent; }
+.flow-nowtext { margin: 14px 0 22px; padding: 10px 14px; max-width: none; font-size: 14px; color: var(--ink); background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; }
+.loop-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 10px; }
+.loop { display: flex; flex-direction: column; min-width: 0; background: var(--surface); border: 1px solid var(--hair); border-radius: 13px; transition: border-color .15s, box-shadow .15s, opacity .15s; }
+.loop-btn { flex: 1 1 auto; display: flex; flex-direction: column; gap: 5px; padding: 12px 14px 9px; text-align: left; background: none; border: 0; border-radius: 12px 12px 0 0; cursor: pointer; }
+.loop-top { display: flex; align-items: center; gap: 9px; }
+.loop-badge { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font: 650 11.5px var(--mono); color: var(--ink-2); border: 1.3px dashed var(--edge); }
+.loop.seen .loop-badge { color: var(--accent-ink); background: var(--accent-soft); border: 1.3px solid var(--accent); }
+.loop-route { font-size: 14px; font-weight: 620; letter-spacing: -.005em; }
+.loop-when { font-size: 13.5px; line-height: 1.42; color: var(--ink); }
+.loop-eg { font-size: 12.5px; line-height: 1.42; color: var(--ink-2); }
+.loop-refs { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 14px 12px; }
+.loop:hover { border-color: var(--hair-2); }
+.loop.is-hot { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.loop.is-dim { opacity: .42; }
+.loop-rules { margin-top: 22px; }
+@container (max-width: 920px) {
+  .flow { padding-top: 0; padding-right: var(--flow-room-v, 104px); }
+  .flow-track { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .flow-here { display: none; }
+  .flow-rails { margin-top: 18px; }
+  .stage-top { gap: 6px; }
+  .stage-n { width: 20px; height: 20px; }
+  .stage-name { font-size: 14.5px; }
+  .stage-what { font-size: 12.5px; }
+  .stage-tag { display: inline-block; }
+  .stage-btn { padding: 10px 11px 6px; }
+  .stage-files { padding: 0 11px 9px; }
+}
+
+/* Priority list */
+.prio-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; }
+.prio-list li a { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; align-items: center; height: 100%; padding: 12px 14px; background: var(--surface); border: 1px solid var(--hair); border-radius: 13px; color: var(--ink); text-decoration: none; transition: border-color .15s, transform .15s, box-shadow .15s; }
+.prio-list li a:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+.prio-list .prio { grid-row: 1 / 3; }
+.prio-list .pl-name { font-weight: 600; font-size: 14px; line-height: 1.3; }
+.prio-list .pl-sub { font-size: 12px; color: var(--muted); }
+.prio-list .pl-sub b { font: 600 11px var(--mono); color: var(--ink-2); }
+.prio { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 22px; padding: 0 6px; font: 650 11.5px var(--mono); color: var(--accent-ink); border: 1px solid var(--accent); border-radius: 6px; background: var(--accent-soft); }
+
+/* Areas and parts */
+.area { margin-bottom: 22px; background: var(--surface); border: 1px solid var(--hair); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; scroll-margin-top: calc(var(--toolbar-h) + 18px); transition: box-shadow .3s; }
+.area.flash { box-shadow: 0 0 0 3px var(--accent-ring), var(--shadow); }
+.area-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: 6px 28px; align-items: start; padding: 20px 22px 18px; }
+.area-heading { display: flex; align-items: center; gap: 10px; grid-column: 1; }
+.area-id { font: 650 12px var(--mono); color: var(--accent-ink); background: var(--accent-soft); padding: 3px 8px; border-radius: 6px; }
+.area-head h3 { margin: 0; font-size: 20px; letter-spacing: -.015em; font-weight: 650; }
+.area-desc { grid-column: 1; margin: 0; color: var(--ink-2); font-size: 14px; }
+.area-stats { grid-column: 2; grid-row: 1 / 3; display: grid; gap: 9px; align-self: center; }
+.area-counts { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--ink-2); }
+.area-counts span { display: inline-flex; align-items: center; gap: 5px; }
+.area-counts b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.collapse { margin-left: auto; width: 32px; height: 32px; display: inline-grid; place-items: center; border: 1px solid transparent; background: transparent; border-radius: 8px; cursor: pointer; color: var(--muted); }
+.collapse:hover { background: var(--surface-2); border-color: var(--hair); }
+.collapse svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform .2s; }
+.collapse[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.parts { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hair); }
+.part { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr) 140px; grid-template-areas: "id main pill"; gap: 4px 18px; padding: 15px 22px 15px 24px; border-top: 1px solid var(--hair); scroll-margin-top: calc(var(--toolbar-h) + 18px); transition: background .2s; }
+.part:first-child { border-top: 0; }
+.part::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; }
+.part.st-spec::before { background: var(--good); } .part.st-rec::before { background: var(--warn); } .part.st-gap::before { background: var(--crit); }
+.part.st-out::before { background: repeating-linear-gradient(180deg, var(--out) 0 3px, transparent 3px 6px); }
+.part.st-wd { opacity: .55; }
+.part:hover { background: color-mix(in srgb, var(--surface-2) 70%, transparent); }
+.part.flash, .part:target { background: var(--accent-soft); }
+.pid { grid-area: id; font: 600 12.5px var(--mono); color: var(--muted); padding-top: 2px; text-decoration: none; }
+.pid:hover { color: var(--accent-ink); text-decoration: none; }
+.pmain { grid-area: main; min-width: 0; }
+.pname { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 15.5px; font-weight: 620; letter-spacing: -.005em; }
+.pmeaning { margin: 3px 0 0; color: var(--ink-2); font-size: 14px; max-width: 75ch; }
+.pnote { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); padding: 6px 10px; background: var(--surface-2); border-radius: 8px; border-left: 2px solid var(--hair-2); max-width: 75ch; }
+.pfoot { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 10px; }
+.pgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.plabel { font-size: 10.5px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-right: 3px; }
+.ref, .src { display: inline-flex; align-items: center; height: 23px; padding: 0 7px; font: 550 11.5px var(--mono); border-radius: 6px; text-decoration: none; white-space: nowrap; transition: border-color .12s, color .12s, background .12s; }
+.ref { color: var(--ink); background: var(--surface-2); border: 1px solid var(--hair); }
+.ref:hover { border-color: var(--accent); color: var(--accent-ink); text-decoration: none; }
+.src { color: var(--ink-2); border: 1px dashed var(--hair-2); }
+.src:hover { border-color: var(--accent); border-style: solid; color: var(--accent-ink); text-decoration: none; }
+.none { font-size: 12.5px; color: var(--muted); font-style: italic; }
+.pill { grid-area: pill; justify-self: end; align-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 8px; border-radius: 999px; font-size: 12.5px; font-weight: 600; white-space: nowrap; border: 1px solid transparent; }
+.pill-spec { background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 30%, transparent); }
+.pill-rec { background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 45%, transparent); }
+.pill-gap { background: var(--crit-soft); border-color: color-mix(in srgb, var(--crit) 30%, transparent); }
+.pill-out { background: var(--out-soft); border-color: color-mix(in srgb, var(--out) 40%, transparent); }
+.pill-wd { background: var(--surface-2); white-space: normal; max-width: 240px; }
+/* Decisions */
+.dec-group + .dec-group { margin-top: 22px; }
+.dec-group-head { display: flex; align-items: baseline; gap: 10px; margin: 0 0 10px; font-size: 15px; font-weight: 650; }
+.dec-group-head .n { font: 600 12px var(--mono); color: var(--muted); }
+.dec-group-head p { margin: 0; font-size: 13px; font-weight: 400; color: var(--muted); }
+.dec-group { scroll-margin-top: calc(var(--toolbar-h) + 18px); }
+.dec[hidden], .dec-fold[hidden] { display: none; }
+.dec.dec-open::before { background: var(--warn); }
+.dec-open .dec-when .tag, .dec-partly .dec-when .tag { background: var(--warn-soft); }
+.dec-flag { padding-left: 9px; border-left: 3px solid var(--warn); }
+.dec-folds { display: grid; gap: 10px; }
+.dec-fold { background: var(--surface); border: 1px solid var(--hair); border-radius: 14px; box-shadow: var(--shadow); }
+.dec-fold > summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding: 12px 16px; font-size: 14.5px; font-weight: 600; cursor: pointer; list-style: none; }
+.dec-fold > summary::-webkit-details-marker { display: none; }
+.dec-fold > summary::before { content: "▸"; color: var(--muted); font-size: 12px; }
+.dec-fold[open] > summary::before { content: "▾"; }
+.dec-fold > summary .n { font: 600 12px var(--mono); color: var(--muted); }
+.dec-fold-blurb { flex-basis: 100%; font-size: 13px; font-weight: 400; color: var(--muted); }
+.dec-fold .dec-list { border: 0; border-top: 1px solid var(--hair); border-radius: 0 0 14px 14px; box-shadow: none; }
+.dec-empty { margin: 0; padding: 14px 16px; font-size: 13.5px; color: var(--muted); background: var(--surface); border: 1px dashed var(--hair-2); border-radius: 14px; }
+.dec-list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 1px solid var(--hair); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.dec { position: relative; display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; grid-template-areas: "id main when"; gap: 4px 16px; padding: 13px 20px 13px 22px; border-top: 1px solid var(--hair); scroll-margin-top: calc(var(--toolbar-h) + 18px); transition: background .3s; }
+.dec:first-child { border-top: 0; }
+.dec::before { content: ""; position: absolute; left: 0; top: 11px; bottom: 11px; width: 3px; border-radius: 0 3px 3px 0; background: var(--good); }
+.dec.dec-proposed::before { background: var(--accent); }
+.dec.flash, .dec:target { background: var(--accent-soft); }
+.dec-id { grid-area: id; font: 600 12px var(--mono); color: var(--ink); padding-top: 2px; }
+.dec-main { grid-area: main; min-width: 0; }
+.dec-title { margin: 0; font-size: 14.5px; font-weight: 600; line-height: 1.4; max-width: 80ch; }
+.dec-rec { margin: 4px 0 0; font-size: 13.5px; color: var(--ink-2); max-width: 80ch; }
+.dec-rec b { color: var(--ink); }
+.dec .pfoot { margin-top: 8px; }
+.dec-when { grid-area: when; justify-self: end; font-size: 12px; color: var(--muted); white-space: nowrap; padding-top: 2px; text-align: right; }
+.dec-when .tag { display: inline-block; margin-bottom: 3px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 650; color: var(--ink); background: var(--good-soft); }
+.dec-proposed .dec-when .tag { background: var(--accent-soft); color: var(--accent-ink); }
+.req { display: inline-flex; align-items: center; height: 21px; padding: 0 5px; font: 500 11px var(--mono); color: var(--ink-2); background: transparent; border-radius: 5px; white-space: nowrap; }
+.spec-ids { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px; }
+.pchip { display: inline-flex; align-items: center; height: 23px; padding: 0 7px; font: 550 11.5px var(--mono); border-radius: 6px; color: var(--accent-ink); background: var(--accent-soft); text-decoration: none; }
+.pchip:hover { text-decoration: none; box-shadow: 0 0 0 1px var(--accent); }
+.dchip { display: inline-flex; align-items: center; gap: 5px; height: 23px; padding: 0 7px; font: 550 11.5px var(--mono); border-radius: 6px; color: var(--ink); background: var(--good-soft); text-decoration: none; white-space: nowrap; }
+.dchip:hover { text-decoration: none; box-shadow: 0 0 0 1px var(--good); }
+.dchip-proposed { background: var(--accent-soft); color: var(--accent-ink); }
+.dchip-proposed:hover { box-shadow: 0 0 0 1px var(--accent); }
+.dchip-open { background: var(--warn-soft); }
+.dchip-open:hover { box-shadow: 0 0 0 1px var(--warn); }
+.chip-review { padding: 0 12px; }
+.chip-review .rmark { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.chip-review[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.idea-bar { display: grid; gap: 8px; margin: 0 0 14px; }
+.idea-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.idea-row .plabel { min-width: 66px; }
+.idea-row .chip { height: 30px; font-size: 13px; }
+.idea .dec-when .tag { background: var(--accent-soft); color: var(--accent-ink); }
+.idea-done .dec-when .tag { background: var(--good-soft); color: var(--ink); }
+.idea-no .dec-when .tag { background: var(--out-soft); color: var(--ink); }
+.idea.dec-proposed .dec-when .tag { background: var(--warn-soft); color: var(--ink); }
+.empty { text-align: center; padding: 48px 16px; color: var(--ink-2); background: var(--surface); border: 1px dashed var(--hair-2); border-radius: 18px; }
+
+/* What has been achieved, and codes */
+.rs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.rs-tile { display: flex; flex-direction: column; gap: 2px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--hair); border-radius: 14px; box-shadow: var(--shadow); color: inherit; text-decoration: none; }
+a.rs-tile:hover { border-color: var(--accent); text-decoration: none; }
+.rs-num { font-size: 26px; font-weight: 650; line-height: 1.15; color: var(--ink); font-variant-numeric: tabular-nums; }
+.rs-label { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.rs-sub { font-size: 12.5px; color: var(--muted); }
+.codes-stack { display: grid; gap: 16px; }
+
+/* Sources and about */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--hair); border-radius: 16px; box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; font-size: 11px; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--hair-2); white-space: nowrap; }
+td { padding: 11px 14px; border-bottom: 1px solid var(--hair); vertical-align: top; color: var(--ink-2); }
+td:first-child { font: 600 12.5px var(--mono); color: var(--ink); white-space: nowrap; }
+td.src-title { color: var(--ink); min-width: 320px; }
+tr:last-child td { border-bottom: 0; }
+tr { scroll-margin-top: calc(var(--toolbar-h) + 18px); transition: background .3s; }
+tr.flash, tr:target { background: var(--accent-soft); }
+.about { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--hair); border-radius: 16px; padding: 20px 22px; box-shadow: var(--shadow); }
+.card h3 { margin: 0 0 10px; font-size: 16px; font-weight: 650; }
+.card p, .card li { font-size: 14px; color: var(--ink-2); }
+.card ol, .card ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; }
+.card code { font: 12.5px var(--mono); background: var(--surface-2); padding: 1px 5px; border-radius: 5px; color: var(--ink); }
+.status-legend { list-style: none; padding: 0 !important; }
+.status-legend li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; align-items: start; }
+.status-legend .icon { margin-top: 3px; }
+.status-legend b { color: var(--ink); }
+.card.wide { grid-column: 1 / -1; }
+.changelog li b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.foot { padding-top: 8px; padding-bottom: 48px; font-size: 12.5px; color: var(--muted); }
+
+/* Tooltip */
+.tip { position: fixed; z-index: 60; left: 0; top: 0; max-width: 340px; padding: 9px 11px; border-radius: 10px; background: var(--tip-bg); color: var(--tip-ink); font-size: 12.5px; line-height: 1.45; box-shadow: 0 10px 30px -8px rgba(0, 0, 0, .35); pointer-events: none; opacity: 0; visibility: hidden; transform: translateY(3px); transition: opacity .12s, transform .12s, visibility .12s; }
+.tip.on { opacity: 1; visibility: visible; transform: none; }
+.tip strong { display: block; font-weight: 650; }
+.tip span { display: block; color: var(--tip-ink-2); }
+.tip span.path { font: 11px var(--mono); margin-top: 3px; }
+
+/* Responsive */
+@media (max-width: 1180px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .toc { display: none; }
+}
+@media (max-width: 900px) {
+  .wrap { padding: 0 16px; }
+  .hero { padding-top: 36px; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .canvas { padding: 16px; border-radius: 16px; }
+  .arch { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; gap: 10px; }
+  .arch > * { grid-row: auto !important; grid-column: auto !important; }
+  .arch > svg.edges, .host-bg, .fixed-node { display: none; }
+  .around-box { grid-column: 1 / -1 !important; margin: 6px 0 0; }
+  .around-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .area-head { grid-template-columns: minmax(0, 1fr); }
+  .area-stats { grid-column: 1; grid-row: auto; }
+  .about { grid-template-columns: minmax(0, 1fr); }
+  .spacer { display: none; }
+}
+@media (max-width: 640px) {
+  .toolbar { position: relative; }
+  .area, .part, tr { scroll-margin-top: 12px; }
+  h1 { font-size: 40px; }
+  .lede { font-size: 16.5px; }
+  .tile { padding: 14px; }
+  .tile-num { font-size: 30px; }
+  .tile-blurb { display: none; }
+  .search { max-width: none; flex-basis: 100%; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; }
+  .part { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "id pill" "main main"; padding: 14px 16px 14px 18px; }
+  .area-head { padding: 16px; }
+  .prio-list { grid-template-columns: minmax(0, 1fr); }
+  .dec { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "id when" "main main"; padding: 12px 16px 12px 18px; }
+  .dec-group-head { flex-wrap: wrap; }
+  .dec, .dec-group { scroll-margin-top: 12px; }
+  .arch, .around-inner { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; }
+}
+@media print {
+  .toolbar, .toc, .skip, .collapse, .tip { display: none !important; }
+  .layout { display: block; }
+  .area, .canvas, .tile, .total, .card, .table-wrap { box-shadow: none; break-inside: avoid; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#areas">Skip to the parts</a>
+
+<header class="hero wrap">
+  <p class="eyebrow"><span class="dot"></span><span id="eyebrow"></span></p>
+  <h1>Project map</h1>
+  <p class="lede">Every part this project needs, and how far this repository covers each one.</p>
+  <p class="meta"><b id="meta-parts"></b> in <b id="meta-areas"></b> · <a href="#decisions" id="meta-dec"></a> · <a href="#ideas" id="meta-ideas"></a> · <a href="#stages">how work moves</a> · <a href="#codes">codes</a> · updated <span id="updated"></span><span id="meta-origin"></span> · kept current by <a class="file-link" data-path="AGENTS.md#working-rules" target="_blank" rel="noopener">working rule 11</a></p>
+  <p class="notice" id="notice" hidden></p>
+  <div class="summary">
+    <div class="tiles" id="tiles" role="group" aria-label="Parts by status. Choose one to show only its parts."></div>
+    <div class="total">
+      <div class="total-head"><span><b>All parts by status</b></span><span>Choose a status above to show only its parts</span></div>
+      <div id="total-bar"></div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar" id="toolbar">
+  <div class="wrap toolbar-inner">
+    <label class="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <span class="sr">Search the map</span>
+      <input id="q" type="search" placeholder="Search parts, decisions and ideas" autocomplete="off" spellcheck="false">
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+    <div class="chips" id="status-chips" role="group" aria-label="Statuses shown"></div>
+    <button id="prio" class="chip chip-prio" type="button" aria-pressed="false"><span class="pmark">P</span><span>Priority gaps</span></button>
+    <button id="review" class="chip chip-review" type="button" aria-pressed="false"><span class="rmark" aria-hidden="true"></span><span>Needs review</span><span class="chip-n" id="review-n"></span></button>
+    <span class="count" id="count" aria-live="polite"></span>
+    <button id="reset" class="link-btn" type="button" hidden>Reset</button>
+    <div class="spacer"></div>
+    <div class="seg-ctl" id="link-mode" role="group" aria-label="Open repository files on">
+      <span class="seg-lbl">Files</span>
+      <button id="lm-github" type="button" aria-pressed="true">GitHub</button>
+      <button id="lm-local" type="button" aria-pressed="false">This folder</button>
+    </div>
+    <button id="theme" class="icon-btn" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor" stroke="none"/></svg>
+      <span class="tlabel">Auto</span>
+    </button>
+  </div>
+</div>
+
+<div class="wrap layout">
+  <nav class="toc" aria-label="Areas">
+    <p class="toc-title">Areas</p>
+    <ol id="toc-list"></ol>
+  </nav>
+  <main id="main">
+    <section class="block" id="achieved" aria-labelledby="achieved-title">
+      <div class="block-head">
+        <h2 id="achieved-title">What has been achieved</h2>
+        <p>What the records say now. Every spec file stays a Draft until the owner reviews it, and a requirement counts as built only when its validations have run with evidence.</p>
+      </div>
+      <div class="rs-grid" id="rs-grid"></div>
+      <div class="card">
+        <h3>A manual review, in order</h3>
+        <ol>
+          <li><a href="#dec-waiting">Waiting for the owner</a>: the only items that need an answer now.</li>
+          <li><a href="#dec-decided">Decided by the owner</a>, by area: check that each still says what you meant. Each links to its spec file and the study behind it.</li>
+          <li><a href="#dec-open">Still open</a>, by what settles it: yours come first, and most of the rest need a measurement or a study before they reach you.</li>
+          <li><a href="#ideas">Ideas bank</a>: good ideas from outside sources, with what comes next for each.</li>
+          <li><a href="#codes">Codes</a>: what each spec file’s word stands for.</li>
+          <li><a href="#stages">How work moves</a>, then the <a href="#areas">parts</a> and the <a href="#priorities">gaps that matter most</a>: what the product still has no spec for.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="block" id="overview" aria-labelledby="overview-title">
+      <div class="block-head">
+        <h2 id="overview-title">How the areas fit together</h2>
+        <p>Everything inside the blue box is the product, and the areas along the bottom surround it. Choose an area to jump to its parts, or hover over it to trace its links.</p>
+      </div>
+      <div class="canvas" id="arch-canvas"><div class="arch" id="arch"></div></div>
+      <p class="dec-empty" id="arch-empty" hidden>The areas come from the project’s <a class="file-link" data-path="studies/ANATOMY.md" target="_blank" rel="noopener">anatomy study</a>, so this diagram is drawn once that has run.</p>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="block" id="stages" aria-labelledby="stages-title">
+      <div class="block-head">
+        <h2 id="stages-title">How work moves</h2>
+        <p>A feature moves through these stages in order, and any stage can send it back to an earlier one. The arcs are those loops: solid blue ones have happened on this project, dashed ones are expected but have not happened yet. Choose a stage or a loop to trace it. This page draws the rule in <a class="file-link" data-path="AGENTS.md#stages-of-the-work" target="_blank" rel="noopener">AGENTS.md</a> and decides nothing.</p>
+      </div>
+      <div class="canvas">
+        <div class="flow-wrap">
+          <div class="flow" id="flow">
+            <svg class="flow-lines" id="flow-lines" aria-hidden="true"></svg>
+            <ol class="flow-track" id="flow-track" aria-label="The stages, in order"></ol>
+            <div class="flow-here" id="flow-here" aria-hidden="true"></div>
+            <div class="flow-rails" id="flow-rails"></div>
+          </div>
+        </div>
+      </div>
+      <p class="flow-status" id="flow-status" aria-live="polite"></p>
+      <div class="legend" id="flow-legend"></div>
+      <p class="flow-nowtext" id="flow-nowtext"></p>
+      <div id="loop-groups"></div>
+      <div class="card loop-rules">
+        <h3>Rules for going back</h3>
+        <ol id="loop-rules"></ol>
+      </div>
+    </section>
+
+    <section class="block" id="priorities" aria-labelledby="prio-title">
+      <div class="block-head">
+        <h2 id="prio-title">Gaps that matter most</h2>
+        <p>A Proposed ranking on the main values, from a study. Nothing here is decided: whether each gap belongs in the product is the owner’s call, after its own research.</p>
+      </div>
+      <ol class="prio-list" id="prio-list"></ol>
+    </section>
+
+    <section class="block" id="decisions" aria-labelledby="dec-title">
+      <div class="block-head">
+        <h2 id="dec-title">Decisions and their specs</h2>
+        <p>Everything the owner has decided, everything waiting for the owner, and everything still open with what settles it. Each links to the spec file and requirement IDs that carry it, the study it rests on and the parts it touches. A proposed or open item binds nothing until the owner agrees; “No spec file yet” means it waits for one. The <a class="file-link" data-path="AGENTS.md#architecture-invariants" target="_blank" rel="noopener">architecture invariants</a> and <a class="file-link" data-path="AGENTS.md#working-rules" target="_blank" rel="noopener">working rules</a> hold over all of these, and each feature’s original words are in its <a class="file-link" data-path="features/README.md" target="_blank" rel="noopener">feature note</a>. The search box above finds decisions too.</p>
+      </div>
+      <div id="dec-groups"></div>
+    </section>
+
+    <section class="block" id="ideas" aria-labelledby="ideas-title">
+      <div class="block-head">
+        <h2 id="ideas-title">Ideas bank</h2>
+        <p>Good ideas seen in outside sources, kept for later study or building, each with its evidence and what comes next. Nothing here is decided or built, every measurement is <code>UNEXECUTED</code>, and “Measured” means by the source’s own authors on their tasks, never this project’s measurement. Choose a chip to narrow the list; the search box above searches it too.</p>
+      </div>
+      <div class="idea-bar" id="idea-bar"></div>
+      <div class="dec-folds" id="idea-folds"></div>
+      <p class="dec-empty" id="idea-empty" hidden>No idea matches these filters.</p>
+    </section>
+
+    <section class="block" id="codes" aria-labelledby="codes-title">
+      <div class="block-head">
+        <h2 id="codes-title">Codes</h2>
+        <p>A spec file’s code is the word that starts every ID in it: LOGIN-011 is requirement 11 of the login spec file, LOGIN-Q2 its second open question and LOGIN-V1 its first validation. This page shows the standard; the rule itself is in <a class="file-link" data-path="specs/README.md#code-standard" target="_blank" rel="noopener">specs/README.md</a>.</p>
+      </div>
+      <div class="codes-stack">
+        <div class="card">
+          <h3>The standard</h3>
+          <ol>
+            <li>One English word, singular, in capitals, of 3 to 8 letters.</li>
+            <li>Taken from the spec file’s name or title, so a reader can tell which file it is without a key.</li>
+            <li>Never an abbreviation, an acronym or a blend.</li>
+            <li>Used by no other spec file.</li>
+            <li>Fixed once the spec file exists. Numbers are never renumbered or reused.</li>
+          </ol>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Spec file</th><th>Covers</th><th>Decisions</th><th>Parts</th></tr></thead>
+            <tbody id="code-body"></tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Other IDs</th><th>What they are</th><th>Where defined</th></tr></thead>
+            <tbody>
+              <tr><td>F012</td><td>A feature</td><td><a class="file-link" data-path="features/README.md" target="_blank" rel="noopener">features/</a></td></tr>
+              <tr><td>LOGIN A14</td><td>A decision label in a spec file; always cited with its code</td><td>That file’s decisions table</td></tr>
+              <tr><td>A3.13, S12</td><td>A part and a source of this map</td><td>Here</td></tr>
+              <tr><td>E9, B6, N2</td><td>A study’s findings; always cited with the study</td><td>Their study</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="areas" aria-label="Parts by area">
+      <p class="empty" id="empty" hidden>No part matches. <button class="link-btn" type="button" id="empty-reset">Reset the filters</button></p>
+    </section>
+
+    <section class="block" id="sources" aria-labelledby="sources-title">
+      <div class="block-head">
+        <h2 id="sources-title">Sources</h2>
+        <p>The codes in “Seen in”. Each source names parts, and a study’s research log has every query and URL. A source’s own measurements are evidence about its authors’ tasks, never this project’s measurements.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Code</th><th>Source</th><th>Kind</th><th>How it was read</th><th>Parts</th></tr></thead>
+          <tbody id="src-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="about-block" aria-labelledby="about-title">
+      <div class="block-head"><h2 id="about-title">About this map</h2></div>
+      <div class="about">
+        <div class="card">
+          <h3>How to read it</h3>
+          <ul class="status-legend" id="status-legend"></ul>
+          <p>“Covered by” links to the records that cover a part; hover over one for its title. “Decisions” names the owner decisions (green), the proposed ones awaiting review (blue) and the ones still open (amber) that bear on the part. “Seen in” names the sources that describe it. A mark says what this repository records, not what is built. The map decides nothing and changes no requirement.</p>
+        </div>
+        <div class="card">
+          <h3>Keeping it current</h3>
+          <ol>
+            <li><code>project</code> and <code>repo</code> name the project and its GitHub repository, as owner/name; without a repository, the page’s links open files in this folder. <code>overview</code> holds the overview’s labels. <code>notice</code> is a line under the title with a link (<code>text</code>, <code>label</code>, <code>path</code>), for as long as it is true. <code>origin</code> names the study the map comes from (<code>label</code>, <code>path</code>).</li>
+            <li>The areas and parts come from the <a class="file-link" data-path="studies/ANATOMY.md" target="_blank" rel="noopener">anatomy study</a>, never from a preset list. Later studies add to them.</li>
+            <li>Edit the data block at the top of this file, <code>project-map-data</code>. It is JSON, with one part per line; the page redraws every count, bar and diagram from it.</li>
+            <li>A part has an <code>id</code>, <code>name</code>, <code>meaning</code>, <code>status</code> (Specified, Recorded, Gap or Out of plan), <code>refs</code> and <code>seen</code>, and may have a <code>note</code> and a <code>priority</code> (Gaps only).</li>
+            <li>Each key in <code>refs</code> must be in the <code>refs</code> table, which holds its <code>title</code> and <code>href</code>; each code in <code>seen</code> must be in <code>sources</code>. A source has a <code>title</code>, a <code>kind</code>, <code>read</code> (how it was read) and may have <code>segments</code>: the pieces of its title, each with its <code>text</code> and, for a link, its <code>url</code>.</li>
+            <li>New part: the next number in its area. IDs are never renumbered or reused. A part that no longer applies keeps its line, with <code>"status": "Withdrawn: &lt;date&gt;, &lt;reason&gt;"</code>; it leaves the counts.</li>
+            <li>New area: the next A number, with <code>place</code> as [row, first column, end column] in the overview, or no <code>place</code> to sit with the areas around the product. Row 2 sits above the blue box and rows from 4 inside it; [4, 1, 5] spans its full width, and [4, 5, 6] sits outside it on the right. Add its links to <code>edges</code>: each names two of the areas, <code>user</code> and <code>outside</code>, and may add <code>both</code> or <code>dashed</code>.</li>
+            <li>A decision in <code>decisions</code> has an <code>id</code>, <code>title</code>, <code>status</code> (Decided by the owner, Proposed for the owner’s review, or Open), <code>when</code>, <code>specs</code> (each spec key with its requirement IDs or § sections; empty while no spec file carries it) and <code>parts</code>; a decision with no parts shows under Project and process. It may have a <code>study</code>, a <code>record</code> and a <code>recommended</code> option, which Proposed needs. An Open one has <code>settled_by</code> (owner, review, measurement, study or other) and a <code>note</code> saying what it blocks or what settles it. A partly decided one has <code>open_part</code>. <code>flag</code> marks something the owner may want to reopen, and <code>also</code> names another label for it. When the owner agrees, set Decided and the owner’s time.</li>
+            <li>An idea in <code>ideas</code> has an <code>id</code> (IDEA-NNN, never renumbered or reused), <code>name</code>, <code>what</code>, <code>sources</code> (S codes or a plain name), <code>seen</code> (a study’s key in <code>refs</code>, then the finding), <code>evidence</code> (Measured, Vendor’s test, Claim or Design only), <code>gives</code> (Success, Speed, Latency, Cost, Safety, Use), <code>next</code> (Owner, Measure, Study, Carry, Spec, Carried or Not for us), and <code>settle</code>, with <code>specs</code> and <code>parts</code> where they exist. A study of an outside source adds its good ideas here; when an idea moves, change its <code>next</code> and <code>settle</code>. <code>idea_from</code> names the sources for the filter.</li>
+            <li>The Codes table is drawn from the spec files’ entries in <code>refs</code>, each keyed by its code. A new spec file’s code follows the standard and appears by itself.</li>
+            <li>“How work moves” is drawn from <code>stages</code>, <code>stage_rails</code>, <code>stage_now</code>, <code>loops</code> and <code>loop_rules</code>. A loop has an <code>id</code>, <code>from</code> and <code>to</code> (stage IDs, later to earlier), <code>seen</code> (true once it has happened on this project), <code>when</code>, <code>example</code> and <code>refs</code>. The rule itself is in AGENTS.md.</li>
+            <li>Add a line to <code>changelog</code> and set <code>updated</code>, with the project’s time.</li>
+            <li>Run the project check, <code>tools/check_project.py</code>. It validates this data block: unique parts, known statuses, references that resolve, a link to every feature note and spec file, a row in <code>decisions</code> for every open question in a spec file, and each idea’s values, references, spec IDs and parts.</li>
+          </ol>
+        </div>
+        <div class="card wide">
+          <h3>Change log</h3>
+          <ul class="changelog" id="changelog"></ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<footer class="wrap foot">Project map · <span id="foot-name"></span>. Drawn from the data block in this file; it works offline and loads nothing from the network.</footer>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+(() => {
+  'use strict';
+  // Placeholders show only in the template itself, before tools/start_project.py fills them in.
+  const data = JSON.parse(document.getElementById('project-map-data').textContent.replace(/\{\{PROJECT\}\}/g, 'New project').replace(/\{\{NOW\}\}/g, 'at the start').replace(/\{\{REPO\}\}/g, ''));
+  const STATUSES = [
+    { key: 'Specified', cls: 'spec', blurb: 'A spec file covers it in detail.' },
+    { key: 'Recorded', cls: 'rec', blurb: 'A rule, decision or feature note records it; no spec file yet.' },
+    { key: 'Gap', cls: 'gap', blurb: 'Part of the whole product; nothing here covers it yet.' },
+    { key: 'Out of plan', cls: 'out', blurb: 'Excluded by an owner decision or an invariant; listed so it is not forgotten.' },
+  ];
+  const BY = new Map(STATUSES.map(s => [s.key, s]));
+  const hasRepo = /^[\w.-]+\/[\w.-]+$/.test(data.repo || '');
+  const REPO = hasRepo ? `https://github.com/${data.repo}/blob/main/` : '';
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } },
+  };
+  const $ = (sel, root = document) => root.querySelector(sel);
+
+  function h(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === 'class') e.className = v;
+      else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else e.setAttribute(k, v === true ? '' : v);
+    }
+    for (const kid of kids.flat()) {
+      if (kid == null || kid === false) continue;
+      e.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    }
+    return e;
+  }
+  function sv(tag, attrs) {
+    const e = document.createElementNS(SVGNS, tag);
+    for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
+    return e;
+  }
+  function icon(status) {
+    const st = BY.get(status);
+    const svg = sv('svg', { viewBox: '0 0 16 16', width: 14, height: 14, class: 'icon icon-' + (st ? st.cls : 'wd'), 'aria-hidden': 'true' });
+    const kind = st ? st.cls : 'wd';
+    if (kind === 'spec') svg.append(sv('circle', { cx: 8, cy: 8, r: 7.2, class: 'i-fill' }), sv('path', { d: 'M4.8 8.2l2.2 2.2 4.3-4.6', class: 'i-mark' }));
+    else if (kind === 'rec') svg.append(sv('circle', { cx: 8, cy: 8, r: 6.3, class: 'i-ring' }), sv('path', { d: 'M8 1.7a6.3 6.3 0 0 0 0 12.6z', class: 'i-fill' }));
+    else if (kind === 'gap') svg.append(sv('circle', { cx: 8, cy: 8, r: 6.3, class: 'i-ring' }), sv('path', { d: 'M8 4.7v4', class: 'i-stroke' }), sv('circle', { cx: 8, cy: 11.1, r: .95, class: 'i-dot' }));
+    else if (kind === 'out') svg.append(sv('circle', { cx: 8, cy: 8, r: 6.3, class: 'i-ring' }), sv('path', { d: 'M3.6 12.4l8.8-8.8', class: 'i-stroke' }));
+    else svg.append(sv('circle', { cx: 8, cy: 8, r: 6.3, class: 'i-ring' }));
+    return svg;
+  }
+  const chevron = () => { const s = sv('svg', { viewBox: '0 0 16 16', 'aria-hidden': 'true' }); s.append(sv('path', { d: 'M4 6l4 4 4-4' })); return s; };
+
+  // ---- Data
+  const parts = [];
+  for (const a of data.areas) for (const p of a.parts) { p.area = a; parts.push(p); }
+  const live = p => BY.has(p.status);
+  const liveParts = parts.filter(live);
+  function counts(list) {
+    const c = {}; for (const s of STATUSES) c[s.key] = 0;
+    for (const p of list) if (live(p)) c[p.status]++;
+    return c;
+  }
+  const decisions = data.decisions || [];
+  const decSlug = id => 'dec-' + id.replace(/[^A-Za-z0-9]+/g, '-');
+  const proposed = x => x.status === 'Proposed';
+  const isOpen = x => x.status === 'Open';
+  const decTag = x => proposed(x) ? 'Awaiting review' : isOpen(x) ? 'Open' : x.open_part ? 'Partly decided' : 'Decided';
+  for (const p of parts) p._dec = decisions.filter(x => (x.parts || []).includes(p.id));
+  for (const x of decisions) x._text = [x.id, x.title, x.status, x.when, x.recommended, x.note, x.open_part, x.flag, x.also, x.study, x.record,
+    ...Object.entries(x.specs || {}).flat(2), ...(x.parts || [])].filter(Boolean).join('\n').toLowerCase();
+  for (const p of parts) {
+    p._text = [p.id, p.name, p.meaning, p.status, p.note || '', p.area.name, p.area.id,
+      ...(p.refs || []).flatMap(r => [r, (data.refs[r] || {}).title || '']),
+      ...(p.seen || []).flatMap(c => [c, (data.sources[c] || {}).title || '']),
+      ...p._dec.flatMap(x => [x.id, x.title])].join('\n').toLowerCase();
+  }
+
+  // ---- State
+  const state = {
+    on: new Set(STATUSES.map(s => s.key)),
+    q: '',
+    prio: false,
+    review: false,
+    links: !hasRepo || store.get('pm-links') === 'local' ? 'local' : 'github',
+    theme: ['light', 'dark'].includes(store.get('pm-theme')) ? store.get('pm-theme') : 'auto',
+  };
+  const filtering = () => Boolean(state.q) || state.prio || state.review || state.on.size !== STATUSES.length;
+  const needsReview = p => p._dec.some(proposed);
+  const matchesQuery = p => !state.q || state.q.split(/\s+/).every(t => p._text.includes(t));
+  const visible = p => matchesQuery(p) && (!state.prio || p.priority) && (!state.review || needsReview(p)) && (live(p) ? state.on.has(p.status) : state.on.size === STATUSES.length);
+  const fileHref = path => (state.links === 'github' ? REPO : '') + path;
+
+  // ---- Tooltip
+  const tip = $('#tip');
+  function showTip(target) {
+    const lines = (target._tip || []).filter(Boolean);
+    if (!lines.length) return;
+    tip.textContent = '';
+    lines.forEach((line, i) => tip.append(h(i === 0 ? 'strong' : 'span', { class: line === target._tipPath ? 'path' : null }, line)));
+    const r = target.getBoundingClientRect();
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    const x = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2), innerWidth - tw - 8);
+    let y = r.top - th - 10;
+    if (y < 8) y = r.bottom + 10;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+    tip.classList.add('on');
+  }
+  const hideTip = () => tip.classList.remove('on');
+  function withTip(node, lines, path) {
+    node._tip = lines; node._tipPath = path;
+    node.addEventListener('pointerenter', () => showTip(node));
+    node.addEventListener('pointerleave', hideTip);
+    node.addEventListener('focus', () => showTip(node));
+    node.addEventListener('blur', hideTip);
+    return node;
+  }
+  addEventListener('scroll', hideTip, { passive: true });
+
+  function bar(c, total, size, what) {
+    const wrap = h('div', { class: 'bar ' + size, role: 'img', 'aria-label': what + ': ' + STATUSES.map(s => `${c[s.key]} ${s.key}`).join(', ') });
+    for (const s of STATUSES) {
+      const n = c[s.key];
+      if (!n) continue;
+      const seg = h('span', { class: 'seg seg-' + s.cls, style: `flex-grow:${n}`, tabindex: size === 'big' ? '0' : null });
+      withTip(seg, [`${s.key}: ${n} of ${total}`, `${Math.round(n / total * 100)}% of ${what.toLowerCase()}`]);
+      wrap.append(seg);
+    }
+    return wrap;
+  }
+
+  // ---- Hero
+  const allCounts = counts(parts);
+  const total = liveParts.length;
+  $('#meta-parts').textContent = `${total} parts`;
+  $('#meta-areas').textContent = `${data.areas.length} areas`;
+  $('#updated').textContent = data.updated;
+  document.title = `${data.project} map`;
+  $('#eyebrow').textContent = data.project;
+  $('#foot-name').textContent = data.project;
+  const pathLink = x => h('a', { class: 'file-link', 'data-path': x.path, target: '_blank', rel: 'noopener' }, x.label);
+  if (data.notice) { $('#notice').append(data.notice.text, ' ', pathLink(data.notice)); $('#notice').hidden = false; }
+  if (data.origin) $('#meta-origin').append(' · from the ', pathLink(data.origin));
+  if (!hasRepo) $('#link-mode').hidden = true;
+  const tileEls = new Map();
+  for (const s of STATUSES) {
+    const t = h('button', { class: 'tile tile-' + s.cls, type: 'button', 'aria-pressed': 'false', onclick: () => isolate(s.key) },
+      h('span', { class: 'tile-top' }, icon(s.key), s.key),
+      h('span', { class: 'tile-num' }, String(allCounts[s.key])),
+      h('span', { class: 'tile-pct' }, `${total ? Math.round(allCounts[s.key] / total * 100) : 0}% of all parts`),
+      h('span', { class: 'tile-blurb' }, s.blurb));
+    tileEls.set(s.key, t);
+    $('#tiles').append(t);
+  }
+  const big = bar(allCounts, total, 'big', 'All parts');
+  big.id = 'total-bar';
+  $('#total-bar').replaceWith(big);
+
+  // ---- Toolbar
+  const chipEls = new Map();
+  for (const s of STATUSES) {
+    const b = h('button', { class: 'chip chip-' + s.cls, type: 'button', 'aria-pressed': 'true', onclick: () => {
+      if (state.on.has(s.key)) { state.on.delete(s.key); if (!state.on.size) STATUSES.forEach(x => state.on.add(x.key)); }
+      else state.on.add(s.key);
+      update();
+    } }, icon(s.key), h('span', null, s.key), h('span', { class: 'chip-n' }, ''));
+    chipEls.set(s.key, b);
+    $('#status-chips').append(b);
+  }
+  function isolate(key) {
+    state.on = (state.on.size === 1 && state.on.has(key)) ? new Set(STATUSES.map(s => s.key)) : new Set([key]);
+    update();
+  }
+  function resetFilters() {
+    state.on = new Set(STATUSES.map(s => s.key)); state.q = ''; state.prio = false; state.review = false; ideaFilter.gives = ideaFilter.evidence = ideaFilter.from = null; $('#q').value = ''; update();
+  }
+  const q = $('#q');
+  q.addEventListener('input', () => { state.q = q.value.trim().toLowerCase(); update(); });
+  q.addEventListener('keydown', e => { if (e.key === 'Escape') { q.value = ''; state.q = ''; update(); q.blur(); } });
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape') hideTip();
+    if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) { e.preventDefault(); q.focus(); }
+  });
+  $('#prio').addEventListener('click', () => { state.prio = !state.prio; update(); });
+  $('#review').addEventListener('click', () => { state.review = !state.review; update(); });
+  $('#reset').addEventListener('click', resetFilters);
+  $('#empty-reset').addEventListener('click', resetFilters);
+
+  function applyLinks() {
+    $('#lm-github').setAttribute('aria-pressed', String(state.links === 'github'));
+    $('#lm-local').setAttribute('aria-pressed', String(state.links === 'local'));
+    document.querySelectorAll('a[data-path]').forEach(a => { a.href = fileHref(a.dataset.path); });
+  }
+  $('#lm-github').addEventListener('click', () => { state.links = 'github'; store.set('pm-links', 'github'); applyLinks(); });
+  $('#lm-local').addEventListener('click', () => { state.links = 'local'; store.set('pm-links', 'local'); applyLinks(); });
+
+  const THEMES = { auto: 'Auto', light: 'Light', dark: 'Dark' };
+  function applyTheme() {
+    if (state.theme === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', state.theme);
+    $('#theme .tlabel').textContent = THEMES[state.theme];
+    $('#theme').setAttribute('aria-label', `Theme: ${THEMES[state.theme]}. Change the theme`);
+  }
+  $('#theme').addEventListener('click', () => {
+    state.theme = { auto: 'light', light: 'dark', dark: 'auto' }[state.theme];
+    store.set('pm-theme', state.theme); applyTheme();
+  });
+
+  // ---- Overview
+  const arch = $('#arch');
+  const nodeEls = new Map();
+  const userIcon = () => { const s = sv('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' }); s.append(sv('circle', { cx: 12, cy: 8, r: 4 }), sv('path', { d: 'M4.5 20c1.2-3.8 4-5.8 7.5-5.8s6.3 2 7.5 5.8' })); return s; };
+  const cloudIcon = () => { const s = sv('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' }); s.append(sv('path', { d: 'M7 18.5h10.5a4 4 0 0 0 .4-8 6 6 0 0 0-11.6 1.6A3.3 3.3 0 0 0 7 18.5z' })); return s; };
+
+  function areaNode(a) {
+    const c = counts(a.parts);
+    a._live = a.parts.filter(live).length;
+    a._meta = `${a._live} parts` + (c.Gap ? ` · ${c.Gap} gap${c.Gap > 1 ? 's' : ''}` : '');
+    const meta = h('span', { class: 'node-meta' }, a._meta);
+    const node = h('button', { class: 'node', type: 'button', 'data-area': a.id,
+      onclick: () => goTo(a.id),
+      onpointerenter: () => trace(a.id, true), onpointerleave: () => trace(a.id, false),
+      onfocus: () => trace(a.id, true), onblur: () => trace(a.id, false) },
+      h('span', { class: 'node-top' }, h('span', { class: 'node-id' }, a.id), h('span', { class: 'node-name' }, a.name)),
+      a.tagline ? h('span', { class: 'node-tag' }, a.tagline) : null,
+      bar(c, a._live, 'mini', a.name),
+      meta);
+    a._node = node; a._nodeMeta = meta;
+    nodeEls.set(a.id, node);
+    return node;
+  }
+  const edgeSvg = sv('svg', { class: 'edges', 'aria-hidden': 'true' });
+  const lastRow = Math.max(4, ...data.areas.filter(x => x.place).map(x => x.place[0]));
+  arch.style.setProperty('--arch-rows', 'auto auto 6px ' + 'auto '.repeat(lastRow - 1));
+  if (!data.areas.some(a => a.place && a.place[2] > 5)) arch.style.setProperty('--arch-cols', 'repeat(4, minmax(0, 1fr))');
+  arch.append(edgeSvg, h('div', { class: 'host-bg', style: `grid-row:3 / ${lastRow + 1}`, 'aria-hidden': 'true' }, h('span', { class: 'host-label' }, data.overview.host)));
+  const userNode = h('div', { class: 'fixed-node', style: 'grid-row:1;grid-column:2 / 4' }, userIcon(), data.overview.user);
+  arch.append(userNode); nodeEls.set('user', userNode);
+  for (const a of data.areas.filter(x => x.place)) {
+    const n = areaNode(a);
+    n.style.gridRow = String(a.place[0]);
+    n.style.gridColumn = `${a.place[1]} / ${a.place[2]}`;
+    arch.append(n);
+  }
+  const outsideNode = h('div', { class: 'fixed-node outside-node', style: `grid-row:${lastRow + 1};grid-column:3 / 4` }, cloudIcon(), data.overview.outside);
+  arch.append(outsideNode); nodeEls.set('outside', outsideNode);
+  const aroundInner = h('div', { class: 'around-inner' });
+  arch.append(h('div', { class: 'around-box', style: `grid-row:${lastRow + 2}` }, h('span', { class: 'around-label' }, data.overview.around), aroundInner));
+  for (const a of data.areas.filter(x => !x.place)) aroundInner.append(areaNode(a));
+
+  function drawEdges() {
+    edgeSvg.textContent = '';
+    if (getComputedStyle(edgeSvg).display === 'none') return;
+    const base = arch.getBoundingClientRect();
+    edgeSvg.setAttribute('width', base.width); edgeSvg.setAttribute('height', base.height);
+    edgeSvg.setAttribute('viewBox', `0 0 ${base.width} ${base.height}`);
+    const defs = sv('defs');
+    for (const id of ['arrow', 'arrow-hot']) {
+      const m = sv('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6.5, markerHeight: 6.5, orient: 'auto-start-reverse' });
+      m.append(sv('path', { d: 'M0.5 1L9.5 5L0.5 9z' }));
+      defs.append(m);
+    }
+    edgeSvg.append(defs);
+    const box = id => {
+      const r = nodeEls.get(id).getBoundingClientRect();
+      const l = r.left - base.left, t = r.top - base.top;
+      return { l, t, r: l + r.width, b: t + r.height, w: r.width, h: r.height, cx: l + r.width / 2, cy: t + r.height / 2 };
+    };
+    const plans = data.edges.map(([from, to, kind]) => {
+      const A = box(from), B = box(to);
+      let sa, sb;
+      if (B.t >= A.b - 2) { sa = 'b'; sb = 't'; }
+      else if (B.b <= A.t + 2) { sa = 't'; sb = 'b'; }
+      else if (B.l >= A.r - 2) { sa = 'r'; sb = 'l'; }
+      else { sa = 'l'; sb = 'r'; }
+      return { from, to, kind, A, B, sa, sb };
+    });
+    const sides = new Map();
+    const add = (id, side, rect, plan, end, other) => {
+      const k = id + '|' + side;
+      if (!sides.has(k)) sides.set(k, { side, rect, list: [] });
+      sides.get(k).list.push({ plan, end, other });
+    };
+    for (const p of plans) { add(p.from, p.sa, p.A, p, 'pa', p.B); add(p.to, p.sb, p.B, p, 'pb', p.A); }
+    for (const { side, rect, list } of sides.values()) {
+      const across = side === 't' || side === 'b';
+      list.sort((x, y) => across ? x.other.cx - y.other.cx : x.other.cy - y.other.cy);
+      const span = (across ? rect.w : rect.h) * 0.56;
+      list.forEach((e, i) => {
+        const pos = list.length === 1 ? (across ? rect.cx : rect.cy)
+          : (across ? rect.cx : rect.cy) - span / 2 + span * i / (list.length - 1);
+        e.plan[e.end] = across ? { x: pos, y: side === 't' ? rect.t : rect.b } : { x: side === 'l' ? rect.l : rect.r, y: pos };
+      });
+    }
+    for (const p of plans) {
+      const a = p.pa, b = p.pb;
+      let d;
+      if (p.sa === 't' || p.sa === 'b') {
+        const dy = (b.y - a.y) / 2;
+        d = `M${a.x} ${a.y}C${a.x} ${a.y + dy} ${b.x} ${b.y - dy} ${b.x} ${b.y}`;
+      } else {
+        const dx = (b.x - a.x) / 2;
+        d = `M${a.x} ${a.y}C${a.x + dx} ${a.y} ${b.x - dx} ${b.y} ${b.x} ${b.y}`;
+      }
+      const path = sv('path', { d, class: 'edge' + (p.kind === 'dashed' ? ' dashed' : ''), 'data-from': p.from, 'data-to': p.to, 'marker-end': 'url(#arrow)' });
+      if (p.kind === 'both') path.setAttribute('marker-start', 'url(#arrow)');
+      edgeSvg.append(path);
+    }
+  }
+  function trace(id, on) {
+    edgeSvg.querySelectorAll('path.edge').forEach(p => {
+      const hit = p.dataset.from === id || p.dataset.to === id;
+      p.classList.toggle('hot', on && hit);
+      p.classList.toggle('dim', on && !hit);
+      const m = on && hit ? 'url(#arrow-hot)' : 'url(#arrow)';
+      p.setAttribute('marker-end', m);
+      if (p.hasAttribute('marker-start')) p.setAttribute('marker-start', m);
+      if (hit) {
+        const other = p.dataset.from === id ? p.dataset.to : p.dataset.from;
+        const n = nodeEls.get(other);
+        if (n && n.classList.contains('node')) n.classList.toggle('is-hot', on);
+      }
+    });
+  }
+  let raf = 0;
+  const redraw = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(drawEdges); };
+  if ('ResizeObserver' in window) new ResizeObserver(redraw).observe(arch);
+  addEventListener('resize', redraw);
+
+  const legend = $('#legend');
+  for (const s of STATUSES) legend.append(h('span', null, icon(s.key), s.key));
+  legend.append(h('span', null, h('i', { class: 'lg-line' }), 'Calls or feeds'), h('span', null, h('i', { class: 'lg-line lg-dash' }), 'Checks'));
+
+  // ---- Table of contents
+  for (const a of data.areas) {
+    const n = h('span', { class: 't-n' }, String(a._live));
+    const link = h('a', { href: '#' + a.id, onclick: e => { e.preventDefault(); goTo(a.id); } },
+      h('span', { class: 't-id' }, a.id), h('span', { class: 't-name' }, a.name), n, bar(counts(a.parts), a._live, 'mini', a.name));
+    a._toc = link; a._tocN = n;
+    $('#toc-list').append(h('li', null, link));
+  }
+
+  if (!data.areas.length) {
+    $('#arch-canvas').hidden = true; $('#legend').hidden = true; $('#arch-empty').hidden = false;
+    $('#overview .block-head p').hidden = true;
+    $('#toc-list').append(h('li', null, h('span', { class: 'none' }, 'None yet')));
+    $('#empty').textContent = 'No parts yet. The anatomy study lists them.';
+  }
+
+  // ---- Priority list
+  parts.filter(p => p.priority).sort((x, y) => x.priority - y.priority || x.id.localeCompare(y.id, undefined, { numeric: true })).forEach(p => {
+    $('#prio-list').append(h('li', null, h('a', { href: '#' + p.id, onclick: e => { e.preventDefault(); goTo(p.id); } },
+      h('span', { class: 'prio' }, 'P' + p.priority),
+      h('span', { class: 'pl-name' }, p.name),
+      h('span', { class: 'pl-sub' }, h('b', null, p.id), ' · ', p.area.name))));
+  });
+  if (!parts.some(p => p.priority)) $('#prio-list').replaceWith(h('p', { class: 'dec-empty' }, 'No gap has a priority yet. A study ranks them on the main values.'));
+
+  // ---- Decisions
+  const partLink = id => h('a', { class: 'pchip', href: '#' + id, onclick: e => { e.preventDefault(); goTo(id); } }, id);
+  function refChip(key) {
+    const ref = data.refs[key] || {};
+    return withTip(h('a', { class: 'ref', 'data-path': ref.href || '', href: ref.href ? fileHref(ref.href) : null, target: '_blank', rel: 'noopener' }, key),
+      [key, ref.title || 'Unknown reference', ref.href || ''], ref.href);
+  }
+  function labelled(s) {
+    const i = s.indexOf(': ');
+    return i < 0 ? s : [h('b', null, s.slice(0, i + 2)), s.slice(i + 2)];
+  }
+  function decRow(x) {
+    const specs = Object.entries(x.specs || {}).map(([key, ids]) => h('span', { class: 'spec-ids' }, refChip(key),
+      ids.length ? ids.map(i => h('span', { class: 'req' }, i)) : h('span', { class: 'req' }, 'whole file')));
+    const basis = [x.study, x.record].filter(Boolean).map(refChip);
+    const hasParts = (x.parts || []).length > 0;
+    x._el = h('li', { class: 'dec' + (proposed(x) ? ' dec-proposed' : isOpen(x) ? ' dec-open' : x.open_part ? ' dec-partly' : ''), id: decSlug(x.id) },
+      h('span', { class: 'dec-id' }, x.id),
+      h('div', { class: 'dec-main' },
+        h('p', { class: 'dec-title' }, x.title),
+        x.recommended ? h('p', { class: 'dec-rec' }, h('b', null, 'Recommended: '), x.recommended) : null,
+        x.note ? h('p', { class: 'dec-rec' }, labelled(x.note)) : null,
+        x.open_part ? h('p', { class: 'dec-rec' }, h('b', null, 'Still open: '), x.open_part) : null,
+        x.flag ? h('p', { class: 'dec-rec dec-flag' }, h('b', null, 'Flag: '), x.flag) : null,
+        x.also ? h('p', { class: 'dec-rec' }, h('b', null, 'Also: '), x.also) : null,
+        h('div', { class: 'pfoot' },
+          specs.length || hasParts ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'In spec'), specs.length ? specs : h('span', { class: 'none' }, 'No spec file yet')) : null,
+          basis.length ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Rests on'), basis) : null,
+          hasParts ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Parts'), x.parts.map(partLink)) : null)),
+      h('span', { class: 'dec-when' }, h('span', { class: 'tag' }, decTag(x)), h('br'), x.when));
+    return x._el;
+  }
+  const waitingList = decisions.filter(proposed);
+  const openList = decisions.filter(isOpen);
+  const decidedList = decisions.filter(x => x.status === 'Decided');
+  $('#meta-dec').textContent = `${decidedList.length} decided, ${waitingList.length} waiting, ${openList.length} open`;
+  const decFolds = [];
+  function decFold(title, blurb, list) {
+    if (!list.length) return null;
+    const n = h('span', { class: 'n' }, String(list.length));
+    const el = h('details', { class: 'dec-fold' },
+      h('summary', null, h('span', null, title), n, blurb ? h('span', { class: 'dec-fold-blurb' }, blurb) : null),
+      h('ol', { class: 'dec-list' }, list.map(decRow)));
+    decFolds.push({ el, n, list });
+    return el;
+  }
+  const decGroup = (id, title, blurb, count, body) => h('div', { class: 'dec-group', id },
+    h('h3', { class: 'dec-group-head' }, title, h('span', { class: 'n' }, String(count)), h('p', null, blurb)), body);
+  const partArea = new Map(parts.map(p => [p.id, p.area]));
+  const decidedIn = area => decidedList.filter(x => ((x.parts || []).length ? partArea.get(x.parts[0]) : null) === area);
+  const OPEN_BY = [
+    ['owner', 'The owner’s, later', 'Each says what it blocks. None is urgent until that phase starts.'],
+    ['review', 'In that spec file’s review', 'A point with a recommendation or a noticed problem, not yet put to the owner. It comes up when the owner reviews that spec file.'],
+    ['measurement', 'A measurement settles it', 'UNEXECUTED: each needs something running first.'],
+    ['study', 'A study or review first', 'No option goes to the owner before its research.'],
+    ['other', 'Another decision or spec file settles it', 'It follows when that one is made.'],
+  ];
+  const openIn = key => openList.filter(x => x.settled_by === key || (key === 'other' && !OPEN_BY.some(o => o[0] === x.settled_by)));
+  $('#dec-groups').append(
+    decGroup('dec-waiting', 'Waiting for the owner', 'Proposed after research; each names its one recommended option, where there is one yet.', waitingList.length,
+      waitingList.length ? h('ol', { class: 'dec-list' }, waitingList.map(decRow)) : h('p', { class: 'dec-empty' }, 'No decision is waiting.')),
+    decGroup('dec-decided', 'Decided by the owner', 'In force, by the area of each decision’s first part. “Partly decided” says what is left.', decidedList.length,
+      decidedList.length ? h('div', { class: 'dec-folds' }, decFold('Project and process', 'How the project is run, not what the product does.', decidedIn(null)), data.areas.map(a => decFold(a.name, null, decidedIn(a)))) : h('p', { class: 'dec-empty' }, 'Nothing is decided yet.')),
+    decGroup('dec-open', 'Still open', 'Not decided yet. Each says what settles it.', openList.length,
+      openList.length ? h('div', { class: 'dec-folds' }, OPEN_BY.map(([key, name, blurb]) => decFold(name, blurb, openIn(key)))) : h('p', { class: 'dec-empty' }, 'Nothing is open.')));
+
+  // ---- What has been achieved
+  const specCodes = Object.keys(data.refs).filter(k => /^[A-Z]{3,8}$/.test(k) && /^specs\/.*\.spec\.md$/.test(data.refs[k].href)).sort();
+  const partCounts = counts(parts);
+  for (const [num, label, sub, id] of [
+    [decidedList.length, 'Decided', 'by the owner', 'dec-decided'],
+    [waitingList.length, 'Waiting', 'for the owner’s answer', 'dec-waiting'],
+    [openList.length, 'Still open', 'each says what settles it', 'dec-open'],
+    [specCodes.length, 'Spec files', 'each a Draft until reviewed', 'codes'],
+    [`${partCounts.Specified}/${liveParts.length}`, 'Parts specified', `${partCounts.Recorded} recorded, ${partCounts.Gap} gaps`, 'areas'],
+    [data.stage_now.stages.map(id => data.stages.find(s => s.id === id).name).join(', '), 'Stage', 'where the project is', 'stages'],
+  ]) {
+    const body = [h('span', { class: 'rs-num' }, String(num)), h('span', { class: 'rs-label' }, label), h('span', { class: 'rs-sub' }, sub)];
+    $('#rs-grid').append(id ? h('a', { class: 'rs-tile', href: '#' + id, onclick: e => { e.preventDefault(); goTo(id); } }, body) : h('div', { class: 'rs-tile' }, body));
+  }
+
+  // ---- Codes
+  for (const code of specCodes) {
+    const ref = data.refs[code];
+    const file = ref.href.split('/').pop();
+    const nDec = decisions.filter(x => code in (x.specs || {})).length;
+    const nPart = parts.filter(p => (p.refs || []).some(r => r === code || r.startsWith(code + ' '))).length;
+    $('#code-body').append(h('tr', { id: 'code-' + code },
+      h('td', null, code),
+      h('td', null, h('a', { 'data-path': ref.href, href: fileHref(ref.href), target: '_blank', rel: 'noopener' }, file)),
+      h('td', null, ref.title.replace(/ spec file.*$/, '')),
+      h('td', null, String(nDec)),
+      h('td', null, String(nPart))));
+  }
+  if (!specCodes.length) $('#code-body').append(h('tr', null, h('td', { colspan: 5 }, 'No spec files yet.')));
+
+  // ---- Areas and parts
+  function partRow(p) {
+    const st = BY.get(p.status);
+    const refs = (p.refs || []).map(r => {
+      const ref = data.refs[r] || {};
+      return withTip(h('a', { class: 'ref', 'data-path': ref.href || '', href: ref.href ? fileHref(ref.href) : null, target: '_blank', rel: 'noopener' }, r),
+        [r, ref.title || 'Unknown reference', ref.href || ''], ref.href);
+    });
+    const seen = (p.seen || []).map(c => {
+      const src = data.sources[c] || {};
+      return withTip(h('a', { class: 'src', href: '#src-' + c, onclick: e => { e.preventDefault(); goTo('src-' + c); } }, c),
+        [`${c} · ${src.kind || 'source'}`, src.title || 'Unknown source', src.read ? `Read: ${src.read}` : '']);
+    });
+    const decs = p._dec.map(x => withTip(h('a', { class: 'dchip' + (proposed(x) ? ' dchip-proposed' : isOpen(x) ? ' dchip-open' : ''), href: '#' + decSlug(x.id), onclick: e => { e.preventDefault(); goTo(decSlug(x.id)); } }, x.id),
+      [x.id + ' · ' + decTag(x).toLowerCase(), x.title, x.when]));
+    const prio = p.priority ? withTip(h('span', { class: 'prio', tabindex: '0' }, 'P' + p.priority),
+      [`Proposed priority ${p.priority}`, 'A ranking on the main values, from a study. Not decided.']) : null;
+    const li = h('li', { class: 'part st-' + (st ? st.cls : 'wd'), id: p.id },
+      h('a', { class: 'pid', href: '#' + p.id }, p.id),
+      h('div', { class: 'pmain' },
+        h('div', { class: 'pname' }, h('span', null, p.name), prio),
+        h('p', { class: 'pmeaning' }, p.meaning),
+        h('div', { class: 'pfoot' },
+          h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Covered by'), refs.length ? refs : h('span', { class: 'none' }, 'Nothing yet')),
+          h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Seen in'), seen.length ? seen : h('span', { class: 'none' }, 'No outside source yet')),
+          decs.length ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Decisions'), decs) : null),
+        p.note ? h('p', { class: 'pnote' }, p.note) : null),
+      h('span', { class: 'pill pill-' + (st ? st.cls : 'wd') }, icon(p.status), p.status));
+    p._el = li;
+    return li;
+  }
+  const areasRoot = $('#areas');
+  for (const a of data.areas) {
+    const c = counts(a.parts);
+    const list = h('ol', { class: 'parts', id: a.id + '-parts' }, a.parts.map(partRow));
+    const toggle = h('button', { class: 'collapse', type: 'button', 'aria-expanded': 'true', 'aria-controls': a.id + '-parts', 'aria-label': 'Collapse ' + a.name }, chevron());
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', (open ? 'Expand ' : 'Collapse ') + a.name);
+      list.hidden = open;
+    });
+    a._list = list; a._toggle = toggle;
+    a._section = h('section', { class: 'area', id: a.id, 'aria-labelledby': a.id + '-title' },
+      h('header', { class: 'area-head' },
+        h('div', { class: 'area-heading' }, h('span', { class: 'area-id' }, a.id), h('h3', { id: a.id + '-title' }, a.name), toggle),
+        h('p', { class: 'area-desc' }, a.description),
+        h('div', { class: 'area-stats' }, bar(c, a._live, 'mid', a.name),
+          h('div', { class: 'area-counts' }, STATUSES.filter(s => c[s.key]).map(s => h('span', null, icon(s.key), h('b', null, String(c[s.key])), s.key))))),
+      list);
+    areasRoot.append(a._section);
+  }
+
+  // ---- Ideas bank
+  const ideas = data.ideas || [];
+  const IDEA_NEXT = [
+    ['Owner', 'Waits for the owner', 'The owner’s word comes first.', 'Owner'],
+    ['Measure', 'Measure it', 'Each needs a paired measurement. All UNEXECUTED.', 'Measure'],
+    ['Study', 'Study it first', 'No option goes to the owner before its research.', 'Study'],
+    ['Carry', 'Ready to write into a spec file', 'A spec file exists for it. It goes in as Proposed, on the owner’s word.', 'Ready to carry'],
+    ['Spec', 'When its spec file is written', 'Nothing holds it yet. Use it as the checklist then.', 'Needs a spec'],
+    ['Carried', 'Already in a spec file', 'Written in as Proposed, so it is not lost.', 'In a spec'],
+    ['Not for us', 'Not for us', 'Rejected on purpose, with the reason, so no one proposes it again.', 'Not for us'],
+  ];
+  const IDEA_TAG = new Map(IDEA_NEXT.map(n => [n[0], n[3]]));
+  const IDEA_RANK = ['Measured', 'Vendor’s test', 'Claim', 'Design only'];
+  const IDEA_GIVES = ['Success', 'Speed', 'Latency', 'Cost', 'Safety', 'Use'];
+  const ideaFilter = { gives: null, evidence: null, from: null };
+  for (const x of ideas) {
+    x._from = [...new Set((x.sources || []).map(s => (data.idea_from || {})[s] || 'Other'))];
+    x._text = [x.id, x.name, x.what, x.next, x.evidence, x.settle, ...(x.gives || []), ...(x.specs || []), ...(x.parts || []), ...(x.sources || []), ...x._from, ...(x.seen || [])].filter(Boolean).join('\n').toLowerCase();
+  }
+  const ideaNarrowed = () => Boolean(state.q || ideaFilter.gives || ideaFilter.evidence || ideaFilter.from);
+  const ideaMatches = x => (!state.q || state.q.split(/\s+/).every(t => x._text.includes(t)))
+    && (!ideaFilter.gives || x.gives.includes(ideaFilter.gives))
+    && (!ideaFilter.evidence || x.evidence === ideaFilter.evidence)
+    && (!ideaFilter.from || x._from.includes(ideaFilter.from));
+  function ideaRow(x) {
+    const sources = (x.sources || []).map(s => data.sources[s]
+      ? withTip(h('a', { class: 'pchip', href: '#src-' + s, onclick: e => { e.preventDefault(); goTo('src-' + s); } }, s), [s, data.sources[s].title])
+      : h('span', { class: 'req' }, s));
+    const seen = x.seen ? h('span', { class: 'spec-ids' }, refChip(x.seen[0]), x.seen[1] ? h('span', { class: 'req' }, x.seen[1]) : null) : null;
+    x._el = h('li', { class: 'dec idea' + (x.next === 'Owner' ? ' dec-proposed' : x.next === 'Carried' ? ' idea-done' : x.next === 'Not for us' ? ' idea-no' : ''), id: x.id },
+      h('span', { class: 'dec-id' }, x.id),
+      h('div', { class: 'dec-main' },
+        h('p', { class: 'dec-title' }, x.name),
+        h('p', { class: 'dec-rec' }, x.what),
+        x.settle ? h('p', { class: 'dec-rec' }, h('b', null, x.next === 'Not for us' ? 'Why not: ' : 'Next: '), x.settle) : null,
+        h('div', { class: 'pfoot' },
+          h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Gives'), (x.gives || []).map(g => h('span', { class: 'req' }, g))),
+          h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Seen in'), sources),
+          seen ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Study'), seen) : null,
+          (x.specs || []).length ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'In spec'), x.specs.map(i => h('span', { class: 'req' }, i))) : null,
+          (x.parts || []).length ? h('div', { class: 'pgroup' }, h('span', { class: 'plabel' }, 'Parts'), x.parts.map(partLink)) : null)),
+      h('span', { class: 'dec-when' }, h('span', { class: 'tag' }, IDEA_TAG.get(x.next) || x.next), h('br'), x.evidence));
+    return x._el;
+  }
+  const ideaChips = [];
+  const ideaChipRow = (key, label, values) => h('div', { class: 'idea-row' }, h('span', { class: 'plabel' }, label),
+    values.map(v => {
+      const n = h('span', { class: 'chip-n' });
+      const b = h('button', { class: 'chip chip-prio', type: 'button', 'aria-pressed': 'false', onclick: () => { ideaFilter[key] = ideaFilter[key] === v ? null : v; update(); } }, h('span', null, v), n);
+      ideaChips.push({ key, v, b, n });
+      return b;
+    }));
+  $('#idea-bar').append(
+    ideaChipRow('gives', 'Gives', IDEA_GIVES),
+    ideaChipRow('evidence', 'Evidence', IDEA_RANK),
+    ideaChipRow('from', 'From', [...new Set([...Object.values(data.idea_from || {}), ...ideas.flatMap(x => x._from)])]));
+  const ideaFolds = [];
+  for (const [key, title, blurb] of IDEA_NEXT) {
+    const list = ideas.filter(x => x.next === key).sort((a, b) => IDEA_RANK.indexOf(a.evidence) - IDEA_RANK.indexOf(b.evidence) || a.id.localeCompare(b.id));
+    if (!list.length) continue;
+    const n = h('span', { class: 'n' }, String(list.length));
+    const el = h('details', { class: 'dec-fold' },
+      h('summary', null, h('span', null, title), n, h('span', { class: 'dec-fold-blurb' }, blurb)),
+      h('ol', { class: 'dec-list' }, list.map(ideaRow)));
+    ideaFolds.push({ el, n, list });
+    $('#idea-folds').append(el);
+  }
+  $('#meta-ideas').textContent = `${ideas.length} banked idea${ideas.length === 1 ? '' : 's'}`;
+  if (!ideas.length) { $('#idea-bar').hidden = true; $('#idea-empty').textContent = 'No ideas banked yet. A study of an outside source adds its good ideas here.'; }
+
+  // ---- Sources, legend, change log
+  for (const [code, src] of Object.entries(data.sources)) {
+    const used = parts.filter(p => (p.seen || []).includes(code)).map(p => p.id);
+    const title = h('td', { class: 'src-title' }, (src.segments || [{ text: src.title }]).map(s => s.url
+      ? h('a', { href: s.url, target: '_blank', rel: 'noopener noreferrer' }, s.text) : s.text));
+    const n = h('td', null, String(used.length));
+    if (used.length) withTip(n, [`Seen in ${used.length} part${used.length > 1 ? 's' : ''}`, used.join(', ')]);
+    $('#src-body').append(h('tr', { id: 'src-' + code }, h('td', null, code), title, h('td', null, src.kind), h('td', null, src.read), n));
+  }
+  if (!Object.keys(data.sources).length) $('#src-body').append(h('tr', null, h('td', { colspan: 5 }, 'No sources yet. A study adds the sources it read.')));
+  for (const s of STATUSES) $('#status-legend').append(h('li', null, icon(s.key), h('span', null, h('b', null, s.key + '. '), s.blurb)));
+  for (const c of data.changelog) $('#changelog').append(h('li', null, h('b', null, c.when + '. '), c.text));
+
+  // ---- Stages and loops
+  const flow = $('#flow'), flowSvg = $('#flow-lines');
+  const stageIndex = new Map(data.stages.map((s, i) => [s.id, i]));
+  const stageName = id => data.stages[stageIndex.get(id)].name;
+  const flowState = { pin: null, hover: null };
+  const flowHover = f => { flowState.hover = f; flowFocus(); };
+  const flowPin = f => {
+    const p = flowState.pin;
+    flowState.pin = p && p.stage === f.stage && p.loop === f.loop ? null : f;
+    flowFocus();
+  };
+  const focusEvents = f => ({
+    onclick: () => flowPin(f),
+    onpointerenter: () => flowHover(f), onpointerleave: () => flowHover(null),
+    onfocus: () => flowHover(f), onblur: () => flowHover(null),
+  });
+
+  data.stages.forEach((s, i) => {
+    const isNow = data.stage_now.stages.includes(s.id);
+    s._btn = h('button', { class: 'stage-btn', type: 'button', 'aria-pressed': 'false', ...focusEvents({ stage: s.id }) },
+      h('span', { class: 'stage-top' }, h('span', { class: 'stage-n' }, String(i + 1)), h('span', { class: 'stage-name' }, s.name), isNow ? h('span', { class: 'stage-tag' }, 'Now') : null),
+      h('span', { class: 'stage-what' }, s.what));
+    const files = s.files.map(f => f.path
+      ? h('a', { class: 'ref', 'data-path': f.path, href: fileHref(f.path), target: '_blank', rel: 'noopener' }, f.label)
+      : h('span', { class: 'stage-file' }, f.label));
+    s._el = h('li', { class: 'stage' + (isNow ? ' is-now' : '') + (data.stage_now.not_started.includes(s.id) ? ' is-later' : '') }, s._btn, h('span', { class: 'stage-files' }, files));
+    $('#flow-track').append(s._el);
+  });
+  const nowAt = data.stage_now.stages.map(id => stageIndex.get(id));
+  $('#flow-here').append(h('span', { class: 'here-mark', style: `grid-column:${Math.min(...nowAt) + 1} / ${Math.max(...nowAt) + 2}` }, h('span', { class: 'here-label' }, 'The project is here')));
+  for (const r of data.stage_rails) {
+    const name = r.path ? h('a', { class: 'ref', 'data-path': r.path, href: fileHref(r.path), target: '_blank', rel: 'noopener' }, r.label) : h('span', { class: 'ref' }, r.label);
+    $('#flow-rails').append(h('div', { class: 'rail' }, name, r.text));
+  }
+  $('#flow-nowtext').textContent = data.stage_now.text;
+  for (const rule of data.loop_rules) $('#loop-rules').append(h('li', null, rule));
+  $('#flow-legend').append(
+    h('span', null, h('i', { class: 'lg-line lg-fwd' }), 'Moves forward'),
+    h('span', null, h('i', { class: 'lg-line lg-seen' }), 'Loop seen on this project'),
+    h('span', null, h('i', { class: 'lg-line lg-dash' }), 'Loop expected, not seen yet'),
+    h('span', null, h('i', { class: 'lg-box' }), 'Where the project is'),
+    h('span', null, h('i', { class: 'lg-box lg-later' }), 'Not started'));
+
+  for (const [seen, title, blurb] of [[true, 'Seen on this project', 'These have already happened.'], [false, 'Expected', 'These have not happened on this project yet.']]) {
+    const list = data.loops.filter(l => !!l.seen === seen);
+    if (!list.length) continue;
+    const ul = h('ul', { class: 'loop-list' });
+    for (const l of list) {
+      l._btn = h('button', { class: 'loop-btn', type: 'button', 'aria-pressed': 'false', ...focusEvents({ loop: l.id }) },
+        h('span', { class: 'loop-top' }, h('span', { class: 'loop-badge' }, l.id), h('span', { class: 'loop-route' }, `${stageName(l.from)} → ${stageName(l.to)}`)),
+        h('span', { class: 'loop-when' }, l.when),
+        h('span', { class: 'loop-eg' }, l.example));
+      l._el = h('li', { class: 'loop' + (l.seen ? ' seen' : '') }, l._btn, l.refs.length ? h('span', { class: 'loop-refs' }, l.refs.map(k => refChip(k))) : null);
+      ul.append(l._el);
+    }
+    $('#loop-groups').append(h('div', { class: 'dec-group' }, h('h3', { class: 'dec-group-head' }, title, h('span', { class: 'n' }, String(list.length)), h('p', null, blurb)), ul));
+  }
+
+  // Each loop gets the lowest level where it overlaps no other loop; loops may share a stage.
+  const levels = [];
+  for (const l of data.loops) { l._a = stageIndex.get(l.from); l._b = stageIndex.get(l.to); }
+  [...data.loops].sort((x, y) => (x._a - x._b) - (y._a - y._b) || x._b - y._b).forEach(l => {
+    let t = 0;
+    while ((levels[t] || []).some(o => l._b < o._a && o._b < l._a)) t++;
+    (levels[t] = levels[t] || []).push(l);
+    l._level = t;
+  });
+  flow.style.setProperty('--flow-room-h', (levels.length * 23 + 18) + 'px');
+  flow.style.setProperty('--flow-room-v', (levels.length * 16 + 14) + 'px');
+
+  function drawFlow() {
+    flowSvg.textContent = '';
+    const base = flow.getBoundingClientRect();
+    flowSvg.setAttribute('width', base.width); flowSvg.setAttribute('height', base.height);
+    flowSvg.setAttribute('viewBox', `0 0 ${base.width} ${base.height}`);
+    const rects = data.stages.map(s => {
+      const r = s._el.getBoundingClientRect();
+      return { l: r.left - base.left, r: r.right - base.left, t: r.top - base.top, b: r.bottom - base.top };
+    });
+    const vertical = rects[1].t > rects[0].t + 4;
+    const gap = vertical ? 16 : 23;
+    const edge = vertical ? rects[0].r : rects[0].t;
+    const pt = (along, depth) => (vertical ? `${edge + depth} ${along}` : `${along} ${edge - depth}`);
+    const defs = sv('defs');
+    for (const id of ['flow-fwd', 'flow-seen', 'flow-exp', 'flow-hot']) {
+      const m = sv('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerUnits: 'userSpaceOnUse', markerWidth: 9, markerHeight: 9, orient: 'auto' });
+      m.append(sv('path', { d: 'M0.5 1L9.5 5L0.5 9z' }));
+      defs.append(m);
+    }
+    flowSvg.append(defs);
+    for (let i = 0; i + 1 < rects.length; i++) {
+      const a = rects[i], b = rects[i + 1];
+      const d = vertical ? `M${(a.l + a.r) / 2} ${a.b + 1}V${b.t - 1}` : `M${a.r + 1} ${(a.t + a.b) / 2}H${b.l - 1}`;
+      flowSvg.append(sv('path', { d, class: 'flow-fwd', 'marker-end': 'url(#flow-fwd)' }));
+    }
+    // Along each stage's edge, loops leaving come first and loops arriving after, so nested arcs do not cross there.
+    data.stages.forEach((s, i) => {
+      const out = data.loops.filter(l => l._a === i).sort((x, y) => (x._a - x._b) - (y._a - y._b));
+      const inc = data.loops.filter(l => l._b === i).sort((x, y) => (y._a - y._b) - (x._a - x._b));
+      const list = [...out, ...inc];
+      const start = vertical ? rects[i].t : rects[i].l, len = vertical ? rects[i].b - rects[i].t : rects[i].r - rects[i].l;
+      list.forEach((l, k) => {
+        const pos = start + len * (.16 + .68 * (k + .5) / list.length);
+        if (l._a === i) l._pa = pos; else l._pb = pos;
+      });
+    });
+    for (const l of data.loops) {
+      const a = l._pa, b = l._pb, d = (l._level + 1) * gap, r = Math.min(8, gap - 3, (a - b) / 2);
+      l._path = sv('path', { d: `M${pt(a, 0)}L${pt(a, d - r)}Q${pt(a, d)} ${pt(a - r, d)}L${pt(b + r, d)}Q${pt(b, d)} ${pt(b, d - r)}L${pt(b, 1)}`, class: 'loop-arc' + (l.seen ? ' seen' : '') });
+      flowSvg.append(l._path);
+    }
+    for (const l of data.loops) {
+      const [x, y] = pt((l._pa + l._pb) / 2, (l._level + 1) * gap).split(' ');
+      l._mark = sv('g', { class: 'loop-mark' + (l.seen ? ' seen' : ''), transform: `translate(${x} ${y})` });
+      const c = sv('circle', { r: vertical ? 7.5 : 9 });
+      const t = sv('text', {});
+      t.textContent = l.id;
+      l._mark.append(c, t);
+      l._mark.addEventListener('pointerenter', () => flowHover({ loop: l.id }));
+      l._mark.addEventListener('pointerleave', () => flowHover(null));
+      l._mark.addEventListener('click', () => flowPin({ loop: l.id }));
+      flowSvg.append(l._mark);
+    }
+    flowFocus();
+  }
+
+  function flowFocus() {
+    const f = flowState.hover || flowState.pin, pin = flowState.pin;
+    const hit = l => !!f && (f.loop ? l.id === f.loop : l.from === f.stage || l.to === f.stage);
+    for (const l of data.loops) {
+      const on = hit(l), off = !!f && !on;
+      l._el.classList.toggle('is-hot', on); l._el.classList.toggle('is-dim', off);
+      l._btn.setAttribute('aria-pressed', String(!!pin && pin.loop === l.id));
+      if (!l._path) continue;
+      l._path.classList.toggle('hot', on); l._path.classList.toggle('dim', off);
+      l._path.setAttribute('marker-end', `url(#${on ? 'flow-hot' : l.seen ? 'flow-seen' : 'flow-exp'})`);
+      l._mark.classList.toggle('hot', on); l._mark.classList.toggle('dim', off);
+    }
+    for (const s of data.stages) {
+      const on = !!f && (f.stage === s.id || data.loops.some(l => hit(l) && (l.from === s.id || l.to === s.id)));
+      s._el.classList.toggle('is-hot', on); s._el.classList.toggle('is-dim', !!f && !on);
+      s._btn.setAttribute('aria-pressed', String(!!pin && pin.stage === s.id));
+    }
+    const status = $('#flow-status');
+    status.textContent = '';
+    if (!f) status.append('Choose a stage or a loop to trace it.');
+    else if (f.loop) { const l = data.loops.find(x => x.id === f.loop); status.append(h('b', null, `Loop ${l.id}: `), `${stageName(l.from)} goes back to ${stageName(l.to)}.`); }
+    else { const on = data.loops.filter(hit); status.append(h('b', null, `${stageName(f.stage)}: `), `loops ${on.map(l => l.id).join(', ')} touch this stage.`); }
+    if (pin) status.append(h('button', { class: 'link-btn', type: 'button', onclick: () => { flowState.pin = null; flowFocus(); } }, 'Clear'));
+  }
+  addEventListener('keydown', e => { if (e.key === 'Escape' && flowState.pin) { flowState.pin = null; flowFocus(); } });
+  let flowRaf = 0;
+  const redrawFlow = () => { cancelAnimationFrame(flowRaf); flowRaf = requestAnimationFrame(drawFlow); };
+  if ('ResizeObserver' in window) new ResizeObserver(redrawFlow).observe(flow);
+  addEventListener('resize', redrawFlow);
+
+  // ---- Navigation
+  function goTo(id, instant) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const fold = el.closest('details');
+    if (fold) fold.open = true;
+    if (el.closest('[hidden]') || el.hidden) {
+      const part = parts.find(p => p.id === id);
+      if (part && part.area._list.hidden) part.area._toggle.click();
+      if (el.closest('[hidden]') || el.hidden) resetFilters();
+    }
+    el.scrollIntoView({ behavior: instant || reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 1600);
+    history.replaceState(null, '', '#' + id);
+  }
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) if (e.isIntersecting) {
+        data.areas.forEach(a => a._toc.classList.toggle('is-current', a._section === e.target));
+      }
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    data.areas.forEach(a => io.observe(a._section));
+  }
+
+  // ---- Filtering
+  function update() {
+    const pool = parts.filter(p => matchesQuery(p) && (!state.prio || p.priority) && (!state.review || needsReview(p)));
+    const c = counts(pool);
+    for (const s of STATUSES) {
+      chipEls.get(s.key).setAttribute('aria-pressed', String(state.on.has(s.key)));
+      chipEls.get(s.key).querySelector('.chip-n').textContent = c[s.key];
+      tileEls.get(s.key).setAttribute('aria-pressed', String(state.on.size === 1 && state.on.has(s.key)));
+      tileEls.get(s.key).classList.toggle('is-off', !state.on.has(s.key));
+    }
+    let shown = 0;
+    for (const p of parts) { const v = visible(p); p._el.hidden = !v; if (v && live(p)) shown++; }
+    for (const a of data.areas) {
+      const n = a.parts.filter(p => !p._el.hidden).length;
+      a._section.hidden = n === 0;
+      a._node.classList.toggle('is-empty', n === 0);
+      a._nodeMeta.textContent = filtering() ? `${n} of ${a._live} shown` : a._meta;
+      a._toc.classList.toggle('is-empty', n === 0);
+      a._tocN.textContent = filtering() ? `${n}/${a._live}` : String(a._live);
+    }
+    const decMatches = x => !state.q || state.q.split(/\s+/).every(t => x._text.includes(t));
+    for (const x of decisions) x._el.hidden = !decMatches(x);
+    for (const f of decFolds) {
+      const n = f.list.filter(decMatches).length;
+      f.n.textContent = state.q ? `${n} of ${f.list.length}` : String(f.list.length);
+      f.el.hidden = n === 0;
+      if (state.q && n) f.el.open = true;
+    }
+    let ideaShown = 0;
+    for (const x of ideas) { const v = ideaMatches(x); x._el.hidden = !v; if (v) ideaShown++; }
+    for (const f of ideaFolds) {
+      const n = f.list.filter(ideaMatches).length;
+      f.n.textContent = ideaNarrowed() ? `${n} of ${f.list.length}` : String(f.list.length);
+      f.el.hidden = n === 0;
+      if (ideaNarrowed() && n) f.el.open = true;
+    }
+    $('#idea-empty').hidden = ideaShown !== 0;
+    for (const c of ideaChips) {
+      const saved = ideaFilter[c.key];
+      ideaFilter[c.key] = c.v;
+      c.n.textContent = ideas.filter(ideaMatches).length;
+      ideaFilter[c.key] = saved;
+      c.b.setAttribute('aria-pressed', String(saved === c.v));
+    }
+    $('#prio').setAttribute('aria-pressed', String(state.prio));
+    $('#review').setAttribute('aria-pressed', String(state.review));
+    $('#review-n').textContent = parts.filter(p => live(p) && needsReview(p) && matchesQuery(p)).length;
+    $('#count').textContent = filtering() ? `${shown} of ${total} parts` : `${total} parts`;
+    $('#reset').hidden = !filtering();
+    $('#empty').hidden = shown !== 0;
+  }
+
+  const toolbar = $('#toolbar');
+  const setBar = () => document.documentElement.style.setProperty('--toolbar-h', toolbar.offsetHeight + 'px');
+  if ('ResizeObserver' in window) new ResizeObserver(setBar).observe(toolbar);
+  setBar();
+  applyTheme();
+  applyLinks();
+  update();
+  drawEdges();
+  drawFlow();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { redraw(); redrawFlow(); });
+  const start = decodeURIComponent(location.hash.slice(1));
+  if (start && document.getElementById(start)) requestAnimationFrame(() => goTo(start, true));
+  addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (id) goTo(id); });
+})();
+</script>
+</body>
+</html>

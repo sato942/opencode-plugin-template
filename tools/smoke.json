@@ -1,0 +1,11 @@
+{
+  "commands": ["starter-greet"],
+  "rpc": [
+    {
+      "id": "opencode-plugin-starter",
+      "method": "ping",
+      "input": { "name": "smoke" },
+      "expect": "pong smoke"
+    }
+  ]
+}

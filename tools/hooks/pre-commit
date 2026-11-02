@@ -1,0 +1,8 @@
+#!/bin/sh
+# Refuses a commit when files are stale or unmapped (AGENTS.md, Keeping the project current).
+PYTHON=$(command -v python || command -v python3)
+if [ -z "$PYTHON" ]; then
+  echo "The project check did not run: Python 3 was not found. The commit goes ahead." >&2
+  exit 0
+fi
+exec "$PYTHON" -I tools/check_project.py . --staged

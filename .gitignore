@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Build output and dependencies
+dist/
+build/
+node_modules/
+target/
+__pycache__/
+.venv/
+
+# Machine files
+.DS_Store
+Thumbs.db
+
+# OpenCode: the sync tool's sparse clone, and the isolated instance the smoke test runs
+.upstream/
+.dev/
+
+# The verbatim copy of OpenCode's docs and source keeps its own folder names, such as docs/content/build/
+!plugin-dev/upstream/**

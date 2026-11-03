@@ -261,6 +261,7 @@ Status: **M** = mandatory for every task; **T** = mandatory when the trigger app
 | [FEATURE_MATRIX.md](FEATURE_MATRIX.md) | Every feature's status on every target | Adding, changing or shipping a feature on any target; planning a target | T |
 | [features/PRODUCT.md](features/PRODUCT.md) | The whole product in one place, its vocabulary and the build sequence | A task touches what the product does or the order of work | T |
 | [LEGAL_FLAGS.md](LEGAL_FLAGS.md) | License and terms flags for the legal review | Adding a source or dependency; before a release | T |
+| [LICENSE](LICENSE) | MIT, for the template's own files. OpenCode's copy has its own | Choosing this project's license; before a release | T |
 | [tools/check_project.py](tools/check_project.py), [tools/hooks/pre-commit](tools/hooks/pre-commit) | The project check, which lists what it covers, and the hook that runs it | Changing the check | T |
 | [plugin-dev/upstream/](plugin-dev/upstream/) | OpenCode's docs and source, verbatim at the pin in `SNAPSHOT.json`, with paths as upstream has them. Never edited by hand | Confirming any fact about OpenCode | T |
 | [src/](src/) | The plugin itself: at first a working starter with a server part, a GUI part and an RPC contract, to change into the real thing | Any plugin code | T |

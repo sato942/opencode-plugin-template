@@ -100,4 +100,4 @@ This folder is itself a template: while `tools/start_project.py` exists, the che
 
 ## License
 
-OpenCode's files in [plugin-dev/upstream/](plugin-dev/upstream/) stay under [their MIT license](plugin-dev/upstream/LICENSE). [LEGAL_FLAGS.md](LEGAL_FLAGS.md) lists what has not been reviewed.
+This template's own files are under the [MIT license](LICENSE). OpenCode's files in [plugin-dev/upstream/](plugin-dev/upstream/) stay under [their MIT license](plugin-dev/upstream/LICENSE). [LEGAL_FLAGS.md](LEGAL_FLAGS.md) lists what has not been reviewed.

@@ -31,7 +31,7 @@ The SDK still models the web: `ctx.app.platform`, `ctx.desktop === undefined`, e
 
 1. Main calls `client.plugin.list()` on the sidecar with no location. `packages/desktop/src/main/plugin/host.ts:440`
 2. The server resolves a missing location to `process.cwd()`. `packages/server/src/location.ts:72-79`
-3. Desktop starts the sidecar with `serve --service`, or adopts a running service. `packages/desktop/src/main/service/background-service.ts:60-71,82-85`
+3. Desktop starts the sidecar with `serve --service`, or adopts a running service. `packages/desktop/src/main/service/background-service.ts:60-71,82-85`. A second copy of an installed Desktop adopts the same user's running service even with a test root: [testing.md](testing.md#desktop-windows).
 4. `--service` changes directory to the home directory. `packages/cli/src/server-process.ts:62-66`
 5. Config discovery for that location reads the system and global config directories, then walks up from home looking for `opencode.json(c)` and `.opencode`. `packages/core/src/config/discovery.ts:71,78-82,143-151`
 

@@ -42,8 +42,34 @@ Against a server you started with `OPENCODE_PASSWORD` set, `opencode api --serve
 | Tool execution | A session with a real model, or a deterministic fake provider ([working rule 3](../../AGENTS.md#working-rules)) | `UNEXECUTED` |
 | TUI | `opencode --standalone` in the same XDG environment, and look | `UNEXECUTED`; the starter has no TUI part |
 | GUI build | `npm run build:gui`, then check its `require` calls are all [provided modules](gui.md) | **Observed:** builds, and requires only `@opencode/plugin/gui` and `@opencode/plugin/rpc` |
-| GUI in a window | Add the plugin to the global config of a Desktop you are willing to change, and run the command from the palette | `UNEXECUTED`: it changes a live setup, so it needs the owner's word |
+| GUI in a window | The official workflow, in a Desktop you are willing to change: [Desktop windows](#desktop-windows) | `UNEXECUTED`: it changes a live setup, so it needs the owner's word |
 | Published package | `npm pack`, install the tarball's contents in a clean folder, and point the smoke test's config at it | `UNEXECUTED` |
+
+## Desktop windows
+
+**The official workflow** (`services/www/src/docs/content/build/plugins/gui/index.mdx:214-230`): list the plugin's local directory in `plugins` in `opencode.json(c)`, run `vite build --watch`, and each rebuild reloads the GUI part in every window and in the main process. The server entry does not restart.
+
+That config is the global config of the service Desktop uses, and Desktop lists GUI parts only from its own service ([gui.md](gui.md)). So the workflow changes a live setup. Run it where that is acceptable:
+
+| Where | What keeps it apart | What to set first |
+|---|---|---|
+| A throwaway virtual machine, such as Windows Sandbox | Its own user, files and network, so its own service port | Install Desktop inside it and copy the plugin in |
+| Another user account on the same computer | Its own home folder, app data and per-user install (inference: Desktop's paths and the service's XDG defaults are all per user) | The service port. It is fixed, and one computer has one of each port, so the second account's service fails while the first one runs. In that account, run `opencode service set port <free port>` before Desktop starts |
+| Your own Desktop | Nothing | The owner's word. Remove the plugin from `plugins` afterwards |
+
+Give each a model the plugin can call: a deterministic fake provider keeps the trial free and repeatable.
+
+**The port, from source at the pin.** The managed service listens on a fixed port per channel: `0xC0DE` for `latest`, which Windows moves to `0x70DE`, 28894 (`packages/cli/src/services/service-config.ts:46-60`). A second service on that port stops with "Managed service port … is already in use" (`packages/cli/src/server-process.ts:181-182`). `opencode service set port <port>` stores the port in `<XDG_CONFIG_HOME>/opencode/service.json` (`service-config.ts:116-130`). **Observed** 5 Nov 2026, CLI 2.2.5: that file, `{"port": N}`, was the only one written.
+
+**What does not keep it apart: a second copy of the installed Desktop.** Desktop has a test root, `OPENCODE_DESKTOP_TEST_ROOT`, which moves its user data, session data and XDG folders under one folder (`packages/desktop/src/main/lifecycle/configure.ts:66-86`). In an installed build that is not enough. **Observed** 5 Nov 2026, Desktop 2.2.5 on Windows 11:
+
+1. Desktop deletes `XDG_STATE_HOME` after the test root sets it, unless a login shell defines it, and on Windows it reads no login shell (`packages/desktop/src/main/lifecycle/environment.ts:28-33`). The service registration then falls back to `~/.local/state/opencode/service.json`, so the copy found the same user's running service and connected to it, with that service's password. That service then opened the home folder as a location: it subscribed watchers and loaded its plugins there.
+2. With the home folder moved as well (`USERPROFILE` and `HOME`), the copy started a service of its own, which stopped on the port above until a port was set for it.
+3. With the port set, the window opened with no renderer process and stayed blank. The cause was not found.
+
+Any such copy also meets two more things. An installed build always runs its updater, which checks at start and every 10 minutes and can download and stage an update (read from the installed 2.2.5 bundle). **Observed:** Chromium's `--proxy-server` pointed at a proxy that refuses outside hosts stopped the check with `net::ERR_TUNNEL_CONNECTION_FAILED`. And it registers itself as the `opencode://` handler (`environment.ts:46-47`). Desktop's isolated server mode, which avoids the shared service, exists only for an unpackaged Desktop run from OpenCode's source (`packages/desktop/script/dev.ts:19`, `packages/desktop/src/main/service/background-service.ts:42,46`). That is the workflow for working on OpenCode itself, not on a plugin.
+
+**Stop only what you started.** On Windows, walk the process tree yourself. `taskkill /T` follows parent process ids, and Windows reuses ids, so a process whose parent exited long ago can count as the child of a new one (inference, not reproduced). `stop_tree` in [tools/smoke_plugin.py](../../tools/smoke_plugin.py) counts a child only if it started after its parent; copy it into any probe that stops a server. The dated probes in `studies/` still use `taskkill /T`.
 
 ## Verifying a port from V1
 

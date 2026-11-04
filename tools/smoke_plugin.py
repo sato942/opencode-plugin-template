@@ -63,9 +63,40 @@ def call(method, path, body=None, query=''):
         return json.load(response)
 
 
+def stop_tree(pid):
+    """Stops a process this script started, and the processes it started, children first (Windows only).
+    `taskkill /T` is not used: it follows parent process ids, which Windows reuses, so a process whose parent exited long
+    ago can count as a child of a new one. Here a child counts only if it started after its parent
+    (plugin-dev/guide/testing.md, Desktop windows)."""
+    listing = subprocess.run(['powershell', '-NoProfile', '-Command',
+                              'Get-CimInstance Win32_Process | ForEach-Object { if ($_.CreationDate) { "{0} {1} {2}" -f '
+                              '$_.ProcessId, $_.ParentProcessId, $_.CreationDate.ToFileTimeUtc() } }'],
+                             capture_output=True, text=True).stdout
+    started, children = {}, {}
+    for line in listing.splitlines():
+        parts = line.split()
+        if len(parts) == 3 and all(p.isdigit() for p in parts):
+            child, parent, time = map(int, parts)
+            started[child] = time
+            children.setdefault(parent, []).append(child)
+    order = []
+
+    def walk(p, seen):
+        for c in children.get(p, []):
+            if c not in seen and started.get(c, 0) >= started.get(p, 0):
+                seen.add(c)
+                walk(c, seen)
+        order.append(p)
+
+    if pid in started:
+        walk(pid, {pid})
+    for p in order or [pid]:
+        subprocess.run(['taskkill', '/F', '/PID', str(p)], capture_output=True)
+
+
 def stop(server):
     if sys.platform == 'win32':
-        subprocess.run(['taskkill', '/F', '/T', '/PID', str(server.pid)], capture_output=True)
+        stop_tree(server.pid)
     else:
         server.terminate()
     server.wait(timeout=15)
